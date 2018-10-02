@@ -1,7 +1,9 @@
 ekill
 =============
 
-Chrome plugin for quickly getting rid of popups and other annoying elements on a web page.
+It's like [**xkill**](https://en.wikipedia.org/wiki/Xkill), but for annoying web pages instead.
+
+Chrome plugin for quickly getting elements on a web page.
 
 Link to the plugin on the [chrome web-store](https://missing).
 
