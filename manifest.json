@@ -2,5 +2,26 @@
   "name": "ekill",
   "version": "1.0",
   "description": "Remove unwanted elements from a page quickly!",
-  "manifest_version": 2
+  "manifest_version": 2,
+  "browser_action": {},
+  "permissions": [
+    "tabs",
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["ekill.js"],
+      "css": ["ekill.css"]
+    }
+  ],
+  "icons": {
+    "16": "skull-and-bones-16.png",
+    "48": "skull-and-bones-48.png",
+    "128": "skull-and-bones-128.png"
+  }
 }
