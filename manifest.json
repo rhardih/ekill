@@ -1,6 +1,6 @@
 {
-  "name": "Getting Started Example",
+  "name": "ekill",
   "version": "1.0",
-  "description": "Build an Extension!",
+  "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2
 }
