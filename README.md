@@ -3,7 +3,7 @@ ekill
 
 It's like [**xkill**](https://en.wikipedia.org/wiki/Xkill), but for annoying web pages instead.
 
-Chrome plugin for quickly getting elements on a web page.
+Chrome plugin for quickly getting rid of elements on a web page.
 
 Link to the plugin on the [chrome
 web-store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigdafiogebaeedg?hl=en).
