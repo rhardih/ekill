@@ -34,11 +34,7 @@
     clickable.forEach(function(c) {
       for (var i = 0; i < c.length; i++) {
         c[i].onclickBackup = c[i].onclick;
-        c[i].addEventListener('click', function(e) {
-          if (e.currentTarget === d) return;
-
-          clickHandler(e);
-        });
+        c[i].addEventListener("click", clickHandler);
       }
     });
 
@@ -53,7 +49,8 @@
 
     clickable.forEach(function(c) {
       for (var i = 0; i < c.length; i++) {
-        c[i].onclick= c[i].onclickBackup ;
+        c[i].removeEventListener("click", clickHandler);
+        c[i].addEventListener("click", c[i].onclickBackup);
         delete c[i].onclickBackup;
       }
     });
