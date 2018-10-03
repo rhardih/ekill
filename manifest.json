@@ -1,12 +1,11 @@
 {
   "name": "ekill",
-  "version": "1.1",
+  "version": "1.2",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {},
   "permissions": [
-    "tabs",
-    "<all_urls>"
+    "activeTab"
   ],
   "background": {
     "scripts": ["background.js"],
