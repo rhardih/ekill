@@ -1,5 +1,6 @@
 (function(c, d){
-  var clickable = [
+  let active = false;
+  let clickable = [
     d.getElementsByTagName("a"),
     d.getElementsByTagName("button"),
     d.querySelectorAll('[role=button]'),
@@ -14,25 +15,21 @@
     e.stopPropagation();
   };
   let clickHandler = function(e) {
+    disable();
     e.target.remove();
-    d.removeEventListener("mouseover", overHandler);
-    d.removeEventListener("mouseout", outHandler);
-    d.removeEventListener("click", clickHandler);
-    d.documentElement.classList.remove("ekill-cursor");
-
-    // restore click handlers
-    clickable.forEach(function(c) {
-      for (var i = 0; i < c.length; i++) {
-        c[i].onclick= c[i].onclickBackup ;
-        delete c[i].onclickBackup;
-      }
-    });
-
     e.preventDefault();
     e.stopPropagation();
   };
 
-  let msgHandler = function(message, callback) {
+  let keyHandler = function(e) {
+    if (e.key === "Escape") {
+      disable();
+    }
+  }
+
+  let enable = function() {
+    active = true;
+
     // override click handlers on any clickable element
     clickable.forEach(function(c) {
       for (var i = 0; i < c.length; i++) {
@@ -49,6 +46,39 @@
     d.addEventListener("mouseover", overHandler);
     d.addEventListener("mouseout", outHandler);
     d.addEventListener("click", clickHandler);
+    d.addEventListener("keydown", keyHandler, true);
+  };
+  let disable = function() {
+    active = false;
+
+    clickable.forEach(function(c) {
+      for (var i = 0; i < c.length; i++) {
+        c[i].onclick= c[i].onclickBackup ;
+        delete c[i].onclickBackup;
+      }
+    });
+
+    d.documentElement.classList.remove("ekill-cursor");
+
+    // clean any orphaned hover applied class
+    let orphan = d.querySelector('.ekill');
+    if (orphan !== null) {
+      orphan.classList.remove("ekill");
+    }
+
+    d.removeEventListener("mouseover", overHandler);
+    d.removeEventListener("mouseout", outHandler);
+    d.removeEventListener("click", clickHandler);
+    d.removeEventListener("keydown", keyHandler, true);
+  };
+
+
+  let msgHandler = function(message, callback) {
+    if (active) {
+      disable();
+    } else {
+      enable();
+    }
   };
 
   c.runtime.onMessage.addListener(msgHandler);
