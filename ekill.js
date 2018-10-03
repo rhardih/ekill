@@ -1,7 +1,8 @@
 (function(c, d){
   var clickable = [
     d.getElementsByTagName("a"),
-    d.getElementsByTagName("button")
+    d.getElementsByTagName("button"),
+    d.querySelectorAll('[role=button]'),
   ];
 
   let overHandler = function(e) {
@@ -27,6 +28,7 @@
       }
     });
 
+    e.preventDefault();
     e.stopPropagation();
   };
 
@@ -35,7 +37,11 @@
     clickable.forEach(function(c) {
       for (var i = 0; i < c.length; i++) {
         c[i].onclickBackup = c[i].onclick;
-        c[i].onclick = function() { return false; };
+        c[i].addEventListener('click', function(e) {
+          if (e.currentTarget === d) return;
+
+          clickHandler(e);
+        });
       }
     });
 
