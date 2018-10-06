@@ -11,7 +11,7 @@ web-store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigda
 ![Example](https://raw.githubusercontent.com/rhardih/ekill/master/example.gif)
 
 
-**TIP**: Hotkey - Go to [chrome://extensions](chrome://extensions), click the settings burger and click "Keyboard shortcuts", set ctrl+k, or whatever else is convenient and enjoy even faster killing!
+**TIP**: Hotkey - Go to [chrome://extensions/shortcuts](chrome://extensions/shortcuts), find the item labeled "ekill" and set ctrl+k, or whatever else is convenient and enjoy even faster killing!
 
 # License
 
