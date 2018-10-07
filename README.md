@@ -24,6 +24,10 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
+**1.4**
+
+- Adds support for Firefox
+
 **1.1 - 1.3**
 
 - Introduces ability to toggle on/off, as well as dismiss with Esc key
