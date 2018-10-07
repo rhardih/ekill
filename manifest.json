@@ -28,5 +28,13 @@
     "16": "skull-and-bones-16.png",
     "48": "skull-and-bones-48.png",
     "128": "skull-and-bones-128.png"
+  },
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "MacCtrl+K"
+      }
+    }
   }
 }
