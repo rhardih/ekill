@@ -52,7 +52,8 @@
       let old_body_style = document.style;
       //console.log(old_body_class)
       let documentString = _document.outerHTML.toString();
-      if (documentString.includes(`${ekillStorage[i]}`)) {
+      console.log(ekillStorage[i]);
+      if (documentString.includes(ekillStorage[i])) {
 
         let newHTMLstring = documentString.replace(ekillStorage[i], '');
         //console.log(ekillStorage[i]);
