@@ -3,20 +3,15 @@ ekill
 
 It's like [**xkill**](https://en.wikipedia.org/wiki/Xkill), but for annoying web pages instead.
 
-Chrome and Firefox plugin for quickly getting rid of elements on a web page.
+Chrome plugin for quickly getting rid of elements on a web page.
 
-## Installation
-
-- [Chrome web store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigdafiogebaeedg?hl=en)
-- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/ekill/)
+Link to the plugin on the [chrome
+web-store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigdafiogebaeedg?hl=en).
 
 ![Example](https://raw.githubusercontent.com/rhardih/ekill/master/example.gif)
 
-## Keyboard shortcut
 
-By default **ekill** is toggled with *ctrl+k*, but this can be modified at will.
-
-Go to [chrome://extensions/shortcuts](chrome://extensions/shortcuts), find the item labeled "ekill" and set it to whatever is most convenient.
+**TIP**: Hotkey - Go to [chrome://extensions/shortcuts](chrome://extensions/shortcuts), find the item labeled "ekill" and set ctrl+k, or whatever else is convenient and enjoy even faster killing!
 
 # License
 
@@ -26,7 +21,9 @@ MIT: http://rhardih.mit-license.org
 
 **1.4**
 
-- Adds support for Firefox
+- Added an options page 
+- made it possible to store elements a user has removed
+- added permission to access chrome.storage
 
 **1.1 - 1.3**
 
