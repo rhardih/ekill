@@ -37,7 +37,8 @@
     "unlimitedStorage"
   ],
   "background": {
-    "scripts": ["js/testable.js", "js/background.js"]
+    "scripts": ["js/testable.js", "js/background.js"],
+    "persistent": false
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
