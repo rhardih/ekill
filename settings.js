@@ -19,8 +19,9 @@ function previous_settings() {
 function removeSinglePage(e){
     console.warn(`removing ${e.target.id}`)
     chrome.storage.local.set({[`${e.target.id}`]: []}, function() {
-       
+        let removed = document.getElementById(`dynamic-${e.target.id}`).remove();
       });
+      
 
     }
 
@@ -33,7 +34,7 @@ function printAllPages(){ // get all the pages we have settings for from storage
             //console.log(result[page])
             if(result[page].length !== 0){
                 let newItem = document.createElement('div');
-                newItem.innerHTML = `<span style='padding: 5px;background-color:grey;'>${page.replace('ekill-replace-', '')} --- <button id="${page}">Remove</button></span>`;
+                newItem.innerHTML = `<span id='dynamic-${page}' style='padding: 5px;background-color:grey;'>${page.replace('ekill-replace-', '')} --- <button id="${page}">Remove</button></span>`;
                 URLBOX.appendChild(newItem);
                 document.getElementById(page).addEventListener('click', removeSinglePage); // after we add the item we do this
             }
