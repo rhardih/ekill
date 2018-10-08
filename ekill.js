@@ -9,14 +9,6 @@
 
   });
 
-  if (!localStorage.getItem('ekill-replace')) {
-    localStorage.setItem('ekill-replace', JSON.stringify({
-      "elements": []
-    }));
-  }
-
-
-
 
 
 
