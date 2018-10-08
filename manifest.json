@@ -1,17 +1,18 @@
 {
   "name": "ekill",
-  "version": "1.4",
+  "version": "1.6",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {
-    "default_icon": {
-      "16": "skull-and-bones-16.png",
-      "48": "skull-and-bones-48.png",
-      "128": "skull-and-bones-128.png"
-    }
+
+  },
+  "options_ui": {
+    "page": "settings.html",
+    "open_in_tab": false
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "background": {
     "scripts": ["background.js"],
@@ -28,13 +29,5 @@
     "16": "skull-and-bones-16.png",
     "48": "skull-and-bones-48.png",
     "128": "skull-and-bones-128.png"
-  },
-  "commands": {
-    "_execute_browser_action": {
-      "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "MacCtrl+K"
-      }
-    }
   }
 }
