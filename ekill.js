@@ -41,33 +41,20 @@
     
    
     for (let i = 0; i < ekillStorage.length; i++) {
-      /* TODO:
-            1. this loop can be made better (efficiency) by replacing the modified page AFTER the whole loop has run..
-            2. change the matching ('include(etc etc)') to be more loose.. currently it checks the exact string that was removed.. this allows pages to defeat this with randomisation.
-            3. there's probably a better way to do this!!. not sure about looping over html elements. this is by far the easiest i can think of
-      */
-      let _document = d.body;
-      let old_body_class = _document.className; // since we re-construct the body we should add these back.
-      let old_body_id = _document.id;
-      let old_body_style = document.style;
-      //console.log(old_body_class)
-      let documentString = _document.outerHTML.toString();
-      console.log(ekillStorage[i]);
-      if (documentString.includes(ekillStorage[i])) {
 
-        let newHTMLstring = documentString.replace(ekillStorage[i], '');
-        //console.log(ekillStorage[i]);
-        let element = document.createElement("body");
-        element.innerHTML = `${newHTMLstring}`;
-        element.className = old_body_class;
-        element.id = old_body_style;
-        element.style = old_body_style;
-        var oldChild = d.documentElement.replaceChild(element, d.body);
+      
+      let elementDump = document.getElementsByTagName(ekillStorage[i].element);
+      console.log(elementDump);
+      for(let elem = 0; elem < elementDump.length; elem++){ // elem here is an html element
+        console.log(elementDump[elem])
+        if(elementDump[elem].outerHTML === ekillStorage[i].outerHTML){
+          elementDump[elem].remove();
 
-      } else {
-        //console.log('element to remove was not found on the page')
+        }
       }
 
+
+     
 
     }
 
@@ -100,7 +87,7 @@ let saveRemovedElement = function (e) {
     chrome.storage.local.get({[`ekill-replace-${document.URL}`]: []}, function(result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
       //console.log(result);
       let temp = result[`ekill-replace-${document.URL}`]
-      temp.push(e.target.outerHTML.toString());
+      temp.push( {"element": e.target.localName, "outerHTML": e.target.outerHTML.toString()} );
       chrome.storage.local.set(
         {
           [`ekill-replace-${document.URL}`]: temp
@@ -117,6 +104,8 @@ let saveRemovedElement = function (e) {
   let clickHandler = function (e) { // what we need
     disable();
     saveRemovedElement(e); // save the just removed element (will only save if user has the setting 'keepRemoved' to 'true')
+    console.log(e.target.localName);
+    
     e.target.remove();
     e.preventDefault();
     e.stopPropagation();
