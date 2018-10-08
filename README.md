@@ -28,6 +28,13 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
+**1.6**
+
+- fixed a few issues with the options page not displaying urls nicely
+- made the code smaller
+- fixed issue with ekill breaking pages like youtube or facebook
+- moved from replacing the whole HTML document to the built in remove()
+
 **1.5**
 
 - Added an options page 
