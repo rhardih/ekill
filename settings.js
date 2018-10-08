@@ -34,7 +34,8 @@ function printAllPages(){ // get all the pages we have settings for from storage
             //console.log(result[page])
             if(result[page].length !== 0){
                 let newItem = document.createElement('div');
-                newItem.innerHTML = `<span id='dynamic-${page}' style='padding: 5px;background-color:grey;'>${page.replace('ekill-replace-', '')} --- <button id="${page}">Remove</button></span>`;
+                newItem.innerHTML = `<p id='dynamic-${page}' style='padding: 5px;background-color:grey;color:whitesmoke'>${page.replace('ekill-replace-', '')} --- <button style='float:right;' id="${page}">Remove</button></p>
+                `;
                 URLBOX.appendChild(newItem);
                 document.getElementById(page).addEventListener('click', removeSinglePage); // after we add the item we do this
             }
