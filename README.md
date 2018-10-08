@@ -24,6 +24,10 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
+**1.5**
+
+- Adds light icons for Firefox dark theme.
+
 **1.4**
 
 - Adds support for Firefox
