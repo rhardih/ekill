@@ -1,6 +1,6 @@
 {
   "name": "ekill",
-  "version": "1.4",
+  "version": "1.5",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {
@@ -8,7 +8,16 @@
       "16": "skull-and-bones-16.png",
       "48": "skull-and-bones-48.png",
       "128": "skull-and-bones-128.png"
-    }
+    },
+    "theme_icons": [{
+      "light": "skull-and-bones-16-light.png",
+      "dark": "skull-and-bones-16.png",
+      "size": 16
+    }, {
+      "light": "skull-and-bones-48-light.png",
+      "dark": "skull-and-bones-48.png",
+      "size": 48
+    }]
   },
   "permissions": [
     "activeTab"
