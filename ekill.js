@@ -29,19 +29,19 @@
 
   let removeSaved = function (elementArray) { // removed saved elements 
     console.warn('removing previously removed HTML elements')
-    let ekillStorage = elementArray;
+    let ekillStorage = elementArray; // not sure why i did this?..
     
    
-    for (let i = 0; i < ekillStorage.length; i++) {
+    for (let i = 0; i < ekillStorage.length; i++) { // loop over stored HTML elements
 
       
-      let elementDump = document.getElementsByTagName(ekillStorage[i].element);
-      console.log(elementDump);
+      let elementDump = document.getElementsByTagName(ekillStorage[i].element); // get a list of all the elements in this HTML page that is the same as the tag stored here e.g: <span> <div> etc tc
+      //console.log(elementDump);
       for(let elem = 0; elem < elementDump.length; elem++){ // elem here is an html element
-        console.log(elementDump[elem])
-        if(elementDump[elem].outerHTML === ekillStorage[i].outerHTML){
-          elementDump[elem].remove();
-
+        //console.log(elementDump[elem])
+        if(elementDump[elem].outerHTML === ekillStorage[i].outerHTML){ // cross checking if the outerHTMLs are the same between the stored value and the current itteration value
+          elementDump[elem].remove(); // remove the element.
+          break; // break out of the loop if we found the element to keep that CPU nice and cold..
         }
       }
 
@@ -78,13 +78,13 @@ let saveRemovedElement = function (e) {
     // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
     chrome.storage.local.get({[`ekill-replace-${document.URL}`]: []}, function(result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
       //console.log(result);
-      let temp = result[`ekill-replace-${document.URL}`]
-      temp.push( {"element": e.target.localName, "outerHTML": e.target.outerHTML.toString()} );
-      chrome.storage.local.set(
+      let temp = result[`ekill-replace-${document.URL}`]; // temporary variable to modify
+      temp.push( {"element": e.target.localName, "outerHTML": e.target.outerHTML.toString()} ); // properties we want to save from the selected HTML element
+      chrome.storage.local.set( // saving
         {
           [`ekill-replace-${document.URL}`]: temp
         }, function () {
-          console.info('finished saving element')
+          console.info('finished saving element'); // not needed but its sparkling
         });
 
     });
@@ -96,7 +96,6 @@ let saveRemovedElement = function (e) {
   let clickHandler = function (e) { // what we need
     disable();
     saveRemovedElement(e); // save the just removed element (will only save if user has the setting 'keepRemoved' to 'true')
-    console.log(e.target.localName);
     
     e.target.remove();
     e.preventDefault();
