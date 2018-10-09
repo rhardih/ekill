@@ -28,6 +28,9 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
+**1.5.1**
+- changed the matching aproach to use Xpath instead of outerHTML
+
 **1.5**
 
 - Added an options page 
