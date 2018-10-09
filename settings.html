@@ -3,20 +3,21 @@
 <html>
     <head>
         <title>ekill</title>
+        <link rel="stylesheet" href="settings.css">
     </head>
     <body>
         <h2>Settings</h2>
         <hr />
         <br />  
-        <label for="keepRemoved">Save removed elements</label>
-        <select id='keepRemoved'>
+        <label title="automagically remove previously removed elements from a page" for="keepRemoved">Save removed elements</label>
+        <select title="automagically remove previously removed elements from a page" id='keepRemoved'>
             <option value="true">Yes</option>
             <option value="false">No</option>
         </select>
         <button id='save'>Save</button>
         <br />
         
-        <h2>Advanced clearing</h2>
+        <h2 title="remove ekill storage from a website causing it to return to the websites original behavior">Advanced clearing</h2>
         <h5>Removed the wrong elements? or just want to reset the functionality? </h5>
         <div id='URLBOX'> </div>
 
