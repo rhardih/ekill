@@ -1,10 +1,15 @@
 (function (c, d) {
 
+
   let getStoredSettings = new Promise(function (resolve, reject) { // making this a promise due to the async nature of extension storage
     chrome.storage.sync.get({
       keepRemoved: false
     }, function (items) {
-      resolve(items);
+      if (!items) {
+        resolve({ keepRemoved: false }); // firefox does not seem to support default variables
+      } else {
+        resolve(items);
+      }
     });
 
   });
@@ -15,10 +20,13 @@
 
 
   let docload = function (e) { // document loaded
+    //console.log(c);
     console.log('document loaded')
     getStoredSettings.then(function (settings) {
-      if (settings.keepRemoved === 'true') {
-        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
+      console.log(settings)
+      if (settings.keepRemoved === 'true' || settings.keepRemoved === true) {
+        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
+          console.log(result);
           removeSaved(result[`ekill-replace-${window.location.hostname}`]);
         });
       }
@@ -30,7 +38,7 @@
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
     console.log(ekillStorage)
-    for (let i = 0; i < ekillStorage.length + 1; i++) { 
+    for (let i = 0; i < ekillStorage.length + 1; i++) {
       if (i >= ekillStorage.length) {
         checkDelayed(ekillStorage);
         break;
@@ -94,20 +102,20 @@
 
 
   let saveRemovedElement = function (e) {
-    getStoredSettings.then(function (settings) { 
-      if (settings.keepRemoved === 'true') { 
+    getStoredSettings.then(function (settings) {
+      if (settings.keepRemoved === 'true') {
         // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
-        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
           //console.log(result);
-          let temp = result[`ekill-replace-${window.location.hostname}`]; 
-          let outerHTML_Cleanup = e.target.outerHTML.toString(); 
-          let element = e.target; 
+          let temp = result[`ekill-replace-${window.location.hostname}`];
+          let outerHTML_Cleanup = e.target.outerHTML.toString();
+          let element = e.target;
           if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
             element.removeAttribute('class');
             outerHTML_Cleanup = element.outerHTML.toString();
           }
           temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
-          chrome.storage.local.set( // saving
+          c.storage.local.set( // saving
             {
               [`ekill-replace-${window.location.hostname}`]: temp
             }, function () {
@@ -119,9 +127,9 @@
   }
 
 
-  let clickHandler = function (e) { 
+  let clickHandler = function (e) {
     disable();
-    saveRemovedElement(e); 
+    saveRemovedElement(e);
 
     e.target.remove();
     e.preventDefault();
