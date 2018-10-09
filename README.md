@@ -41,6 +41,7 @@ MIT: http://rhardih.mit-license.org
 - changed autoremove-script to work on the entire website instead of just sub-routes
 - started using bootstrap to style elements in options page
 - made some design pages to the options page to make it work better on firefox
+- fixed sync issues with firefox
 
 **1.4**
 
