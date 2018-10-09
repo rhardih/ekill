@@ -17,11 +17,9 @@
   let docload = function (e) { // document loaded
     console.log('document loaded')
     getStoredSettings.then(function (settings) {
-      //console.log(settings);
-      if (settings.keepRemoved === 'true') { // user wants to remove previously removed elements
-        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+      if (settings.keepRemoved === 'true') {
+        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
           removeSaved(result[`ekill-replace-${window.location.hostname}`]);
-          //console.log(result)
         });
       }
     })
@@ -32,16 +30,15 @@
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
     console.log(ekillStorage)
-    for (let i = 0; i < ekillStorage.length + 1; i++) { // loop over stored HTML elements
+    for (let i = 0; i < ekillStorage.length + 1; i++) { 
       if (i >= ekillStorage.length) {
         checkDelayed(ekillStorage);
         break;
       } else {
         console.log(i)
         console.log(ekillStorage.length)
-        let elementDump = document.getElementsByTagName(ekillStorage[i].element); // get a list of all the elements in this HTML page that is the same as the tag stored here e.g: <span> <div> etc tc
+        let elementDump = document.getElementsByTagName(ekillStorage[i].element); // ekillStorage[i].element's value is usually a span, div etc tec
         for (let elem = 0; elem < elementDump.length; elem++) {
-          //console.log(elementDump[elem])
           if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
             elementDump[elem].remove();
             ekillStorage.splice(i, 1); // whenever we find an element that matched we want to get rid of it to make delayed checking a bit faster
@@ -55,7 +52,7 @@
   let checkDelayed = function (elementArray) {
     let ekillStorage = [...elementArray];
     let intervalCount = 0;
-    let timeOutCount = 18; // how many times to try before we clear the interval?.
+    let timeOutCount = 18; // times interval will run before it gives up
     let interval = setInterval(function () {
       if (intervalCount >= timeOutCount) {
         clearInterval(interval);
@@ -102,10 +99,10 @@
         // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
         chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
           //console.log(result);
-          let temp = result[`ekill-replace-${window.location.hostname}`]; // temporary variable to modify
+          let temp = result[`ekill-replace-${window.location.hostname}`]; 
           let outerHTML_Cleanup = e.target.outerHTML.toString(); 
           let element = e.target; 
-          if (e.target.classList.length === 0) { // empty classes seem to break matching
+          if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
             element.removeAttribute('class');
             outerHTML_Cleanup = element.outerHTML.toString();
           }
@@ -114,7 +111,6 @@
             {
               [`ekill-replace-${window.location.hostname}`]: temp
             }, function () {
-              console.info('finished saving element'); // not needed but its sparkling
             });
 
         });
@@ -123,9 +119,9 @@
   }
 
 
-  let clickHandler = function (e) { // what we need
+  let clickHandler = function (e) { 
     disable();
-    saveRemovedElement(e); // save the just removed element (will only save if user has the setting 'keepRemoved' to 'true')
+    saveRemovedElement(e); 
 
     e.target.remove();
     e.preventDefault();
