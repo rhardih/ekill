@@ -1,10 +1,51 @@
-(function (c, d) {
+(function(c, d){
+  function lookupElementByXPath(path){
+    return new Promise(resolve => {
+      var evaluator = new XPathEvaluator();
+      var result = evaluator.evaluate(path, document.documentElement, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+      let x = result.singleNodeValue;
+      resolve(x);
+    })
+  }
 
-  let getStoredSettings = new Promise(function (resolve, reject) { // making this a promise due to the async nature of extension storage
+
+  function createXPathFromElement(elm){
+    return new Promise(resolve => {
+      var allNodes = document.getElementsByTagName('*');
+      for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode){
+        if (elm.hasAttribute('id')){
+          var uniqueIdCount = 0;
+          for (var n = 0; n < allNodes.length; n++){
+            if (allNodes[n].hasAttribute('id') && allNodes[n].id == elm.id) uniqueIdCount++;
+            if (uniqueIdCount > 1) break;
+          };
+          if (uniqueIdCount == 1){
+            segs.unshift('id("' + elm.getAttribute('id') + '")');
+            resolve(segs.join('/'));
+          } else {
+            segs.unshift(elm.localName.toLowerCase() + '[@id="' + elm.getAttribute('id') + '"]');
+          }
+        } else if (elm.hasAttribute('class')){
+          segs.unshift(elm.localName.toLowerCase() + '[@class="' + elm.getAttribute('class') + '"]');
+        } else {
+          for (i = 1, sib = elm.previousSibling; sib; sib = sib.previousSibling){
+            if (sib.localName == elm.localName) i++;
+          };
+          segs.unshift(elm.localName.toLowerCase() + '[' + i + ']');
+        };
+      };
+      let x = segs.length ? '/' + segs.join('/') : null
+      resolve(x);
+
+    })
+  };
+
+
+  let getStoredSettings = new Promise(function(resolve, reject){ // making this a promise due to the async nature of extension storage
     chrome.storage.sync.get({
       keepRemoved: false
-    }, function (items) {
-      if (!items) {
+    }, function(items){
+      if (!items){
         resolve({ keepRemoved: false }); // firefox does not seem to support default variables??
       } else {
         resolve(items);
@@ -13,58 +54,62 @@
   });
 
 
-  let docload = function (e) { // document loaded
+  let docload = function(e){ // document loaded
     console.log('document loaded')
-    getStoredSettings.then(function (settings) {
-      if (settings.keepRemoved === 'true' || settings.keepRemoved === true) {
-        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
-          removeSaved(result[`ekill-replace-${window.location.hostname}`]);
+    getStoredSettings.then(function(settings){
+      if (settings.keepRemoved === 'true' || settings.keepRemoved === true){
+        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result){ // the "value" in this pair is the default value we get when nothing has been stored yet
+          removeSavedFromDOM(result[`ekill-replace-${window.location.hostname}`]);
         });
       }
     })
   };
 
 
-  let removeSaved = function (elementArray) {
+  let removeSavedFromDOM = function(elementArray){
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
-    for (let i = 0; i < ekillStorage.length + 1; i++) {
-      if (i >= ekillStorage.length) {
+    for (let i = 0; i < ekillStorage.length + 1; i++){
+      if (i >= ekillStorage.length){
         checkDelayed(ekillStorage);
         break;
       } else {
-        let elementDump = document.getElementsByTagName(ekillStorage[i].element); // ekillStorage[i].element's value is usually a span, div etc tec
-        for (let elem = 0; elem < elementDump.length; elem++) {
-          if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-            elementDump[elem].remove();
-            ekillStorage.splice(i, 1); // whenever we find an element that matched we want to get rid of it to make delayed checking a bit faster
-            break;
+        lookupElementByXPath(ekillStorage[i].xpath).then((element) => {
+          if (!element){
+          } else {
+            element.remove();
+            ekillStorage.splice(i, 1);
+            console.warn('removed element from the page')
           }
-        } // forloop 2
+        })
       }
     } // forloop 1
   }
 
-  let checkDelayed = function (elementArray) {
+  let checkDelayed = function(elementArray){
+    console.log(elementArray)
     let ekillStorage = [...elementArray];
     let intervalCount = 0;
     let timeOutCount = 18; // times interval will run before it gives up
-    let interval = setInterval(function () {
-      if (intervalCount >= timeOutCount) {
+    let interval = setInterval(function(){
+      if (intervalCount >= timeOutCount){
         clearInterval(interval);
-      } else if (ekillStorage.length === 0) { // already found & removed all elements
+      } else if (ekillStorage.length === 0){ // already found & removed all elements
         clearInterval(interval);
       } else {
-        for (let i = 0; i < ekillStorage.length; i++) {
-          let elementDump = document.getElementsByTagName(ekillStorage[i].element);
-          for (let elem = 0; elem < elementDump.length; elem++) {
-            if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-              elementDump[elem].remove();
+        for (let i = 0; i < ekillStorage.length; i++){
+          lookupElementByXPath(ekillStorage[i].xpath).then((element) => {
+            //console.log(element)
+            if (!element){
+
+            } else {
+              element.remove();
               ekillStorage.splice(i, 1);
-              break;
+              console.warn('removed element from the page')
             }
-          }
-        }
+          })
+
+        } // forloop 1
         intervalCount++;
       }
 
@@ -79,63 +124,63 @@
     d.querySelectorAll('[role=button]'),
   ];
 
-  let overHandler = function (e) {
+  let overHandler = function(e){
     e.target.classList.add("ekill");
     e.stopPropagation();
   };
-  let outHandler = function (e) {
+  let outHandler = function(e){
     e.target.classList.remove("ekill");
     e.stopPropagation();
   };
 
 
-  let saveRemovedElement = function (e) {
-    getStoredSettings.then(function (settings) {
-      if (settings.keepRemoved === 'true') {
-        // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
-        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
-          let temp = result[`ekill-replace-${window.location.hostname}`];
-          let outerHTML_Cleanup = e.target.outerHTML.toString();
-          let element = e.target;
-          if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
-            element.removeAttribute('class');
-            outerHTML_Cleanup = element.outerHTML.toString();
-          }
-          temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
-          c.storage.local.set( // saving
-            {
-              [`ekill-replace-${window.location.hostname}`]: temp
-            }, function () {
-            });
-
-        });
-      }
+  let saveRemovedElement = function(e){
+    return new Promise((resolve) => {
+      getStoredSettings.then(function(settings){
+        if (settings.keepRemoved === 'true'){
+          // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
+          c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result){ // try and get data for this URL.. if nothing is there we get [] (empty array)
+            createXPathFromElement(e).then(function(path){
+              let temp = result[`ekill-replace-${window.location.hostname}`];
+              temp.push({ "element": e.localName, "xpath": path }); // properties we want to save from the selected HTML element
+              c.storage.local.set( // saving
+                {
+                  [`ekill-replace-${window.location.hostname}`]: temp
+                }, function(){
+                  resolve();
+                });
+            })
+          });
+        } else {
+          resolve();
+        }
+      })
     })
   }
 
 
-  let clickHandler = function (e) {
+  let clickHandler = function(e){
     disable();
-    saveRemovedElement(e);
-
-    e.target.remove();
+    saveRemovedElement(e.toElement).then(() => {
+      e.target.remove();
+    });
     e.preventDefault();
     e.stopPropagation();
   };
 
 
-  let keyHandler = function (e) {
-    if (e.key === "Escape") {
+  let keyHandler = function(e){
+    if (e.key === "Escape"){
       disable();
     }
   }
 
-  let enable = function () {
+  let enable = function(){
     active = true;
 
     // override click handlers on any clickable element
-    clickable.forEach(function (c) {
-      for (var i = 0; i < c.length; i++) {
+    clickable.forEach(function(c){
+      for (var i = 0; i < c.length; i++){
         c[i].onclickBackup = c[i].onclick;
         c[i].addEventListener("click", clickHandler);
       }
@@ -147,11 +192,11 @@
     d.addEventListener("click", clickHandler);
     d.addEventListener("keydown", keyHandler, true);
   };
-  let disable = function () {
+  let disable = function(){
     active = false;
 
-    clickable.forEach(function (c) {
-      for (var i = 0; i < c.length; i++) {
+    clickable.forEach(function(c){
+      for (var i = 0; i < c.length; i++){
         c[i].removeEventListener("click", clickHandler);
         c[i].addEventListener("click", c[i].onclickBackup);
         delete c[i].onclickBackup;
@@ -162,7 +207,7 @@
 
     // clean any orphaned hover applied class
     let orphan = d.querySelector('.ekill');
-    if (orphan !== null) {
+    if (orphan !== null){
       orphan.classList.remove("ekill");
     }
 
@@ -173,8 +218,8 @@
   };
 
 
-  let msgHandler = function (message, callback) {
-    if (active) {
+  let msgHandler = function(message, callback){
+    if (active){
       disable();
     } else {
       enable();
