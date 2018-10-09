@@ -8,11 +8,20 @@
   },
   "options_ui": {
     "page": "settings.html",
-    "open_in_tab": false
+    "open_in_tab": true,
+    "browser_style": true,
+    "chrome_style": false
+  },
+  "applications": {
+    "gecko": {
+      "id": "git@ekill.com",
+      "strict_min_version": "42.0"
+    }
   },
   "permissions": [
     "activeTab",
-    "storage"
+    "storage",
+    "unlimitedStorage"
   ],
   "background": {
     "scripts": ["background.js"],
