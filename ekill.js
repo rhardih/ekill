@@ -1,32 +1,23 @@
 (function (c, d) {
 
-
   let getStoredSettings = new Promise(function (resolve, reject) { // making this a promise due to the async nature of extension storage
     chrome.storage.sync.get({
       keepRemoved: false
     }, function (items) {
       if (!items) {
-        resolve({ keepRemoved: false }); // firefox does not seem to support default variables
+        resolve({ keepRemoved: false }); // firefox does not seem to support default variables??
       } else {
         resolve(items);
       }
     });
-
   });
 
 
-
-
-
-
   let docload = function (e) { // document loaded
-    //console.log(c);
     console.log('document loaded')
     getStoredSettings.then(function (settings) {
-      console.log(settings)
       if (settings.keepRemoved === 'true' || settings.keepRemoved === true) {
         c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
-          console.log(result);
           removeSaved(result[`ekill-replace-${window.location.hostname}`]);
         });
       }
@@ -37,14 +28,11 @@
   let removeSaved = function (elementArray) {
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
-    console.log(ekillStorage)
     for (let i = 0; i < ekillStorage.length + 1; i++) {
       if (i >= ekillStorage.length) {
         checkDelayed(ekillStorage);
         break;
       } else {
-        console.log(i)
-        console.log(ekillStorage.length)
         let elementDump = document.getElementsByTagName(ekillStorage[i].element); // ekillStorage[i].element's value is usually a span, div etc tec
         for (let elem = 0; elem < elementDump.length; elem++) {
           if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
@@ -106,7 +94,6 @@
       if (settings.keepRemoved === 'true') {
         // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
         c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
-          //console.log(result);
           let temp = result[`ekill-replace-${window.location.hostname}`];
           let outerHTML_Cleanup = e.target.outerHTML.toString();
           let element = e.target;
