@@ -75,7 +75,7 @@
         console.log(ekillStorage)
         checkDelayed(ekillStorage);
         break;
-      } else {
+      } else {  
         lookupElementByXPath(ekillStorage[i].xpath).then((element) => {
           if (!element){
           } else {

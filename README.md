@@ -3,12 +3,12 @@ ekill
 
 It's like [**xkill**](https://en.wikipedia.org/wiki/Xkill), but for annoying web pages instead.
 
-Chrome and Firefox plugin for quickly getting rid of elements on a web page.
+Chrome plugin for quickly getting rid of elements on a web page.
 
 ## Installation
 
 - [Chrome web store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigdafiogebaeedg?hl=en)
-- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/ekill/)
+
 
 ![Example](https://raw.githubusercontent.com/rhardih/ekill/master/example.gif)
 
@@ -30,6 +30,7 @@ MIT: http://rhardih.mit-license.org
 
 **1.5.1**
 - changed the matching aproach to use Xpath instead of outerHTML
+- removed firefox from this file.. it seems to only work on chrome
 
 **1.5**
 
