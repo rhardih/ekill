@@ -1,6 +1,5 @@
 function save_options() { // la laa lalala la lalalala lala
     let keepRemoved_Value = document.getElementById('keepRemoved').value;
-    //console.log(keepRemoved_Value);
     chrome.storage.sync.set({ keepRemoved: keepRemoved_Value }, function () {
 
     });
@@ -16,23 +15,19 @@ function previous_settings() {
 }
 
 
-function removeSinglePage(e){
+function removeSinglePage(e) {
     console.warn(`removing ${e.target.id}`)
-    chrome.storage.local.set({[`${e.target.id}`]: []}, function() {
+    chrome.storage.local.set({ [`${e.target.id}`]: [] }, function () {
         let removed = document.getElementById(`dynamic-${e.target.id}`).remove();
-      });
-      
+    });
+}
 
-    }
 
-function printAllPages(){ // get all the pages we have settings for from storage and updates the DOM
-    chrome.storage.local.get(null, function(result) {
-        //console.log(result);
+function printAllPages() { // get all the pages we have settings for from storage and updates the DOM
+    chrome.storage.local.get(null, function (result) {
         let URLBOX = document.getElementById('URLBOX');
-        for(page in result){  
-          
-            //console.log(result[page])
-            if(result[page].length !== 0){
+        for (page in result) {
+            if (result[page].length !== 0) {
                 let newItem = document.createElement('div');
                 newItem.innerHTML = `<li class="list-group-item" id='dynamic-${page}' >${page.replace('ekill-replace-', '')} --- <button class="btn btn-danger  " style='float:right;' id="${page}">Remove</button></p>
                 `;
@@ -40,24 +35,15 @@ function printAllPages(){ // get all the pages we have settings for from storage
                 document.getElementById(page).addEventListener('click', removeSinglePage); // after we add the item we do this
             }
         }
-        
-        
-       });
+
+    });
 }
 
 
-
-function onLoad(){
+function onLoad() {
     previous_settings();
     printAllPages();
 }
-
-
-
-function clearStorage() {
-   
-}
-
 
 // events
 document.getElementById('save').addEventListener('click', save_options);
