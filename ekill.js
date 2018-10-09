@@ -67,10 +67,12 @@
 
 
   let removeSavedFromDOM = function(elementArray){
+    console.log(elementArray);
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
     for (let i = 0; i < ekillStorage.length + 1; i++){
-      if (i >= ekillStorage.length){
+      if (i === ekillStorage.length+1){
+        console.log(ekillStorage)
         checkDelayed(ekillStorage);
         break;
       } else {
@@ -87,7 +89,6 @@
   }
 
   let checkDelayed = function(elementArray){
-    console.log(elementArray)
     let ekillStorage = [...elementArray];
     let intervalCount = 0;
     let timeOutCount = 18; // times interval will run before it gives up
@@ -136,11 +137,15 @@
 
   let saveRemovedElement = function(e){
     return new Promise((resolve) => {
+      let element = e.toElement;
+      if (e.target.classList.length === 0){ // fix for:  'empty classes seem to break matching'
+            element.removeAttribute('class');
+      }
       getStoredSettings.then(function(settings){
         if (settings.keepRemoved === 'true'){
           // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
           c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result){ // try and get data for this URL.. if nothing is there we get [] (empty array)
-            createXPathFromElement(e).then(function(path){
+            createXPathFromElement(element).then(function(path){
               let temp = result[`ekill-replace-${window.location.hostname}`];
               temp.push({ "element": e.localName, "xpath": path }); // properties we want to save from the selected HTML element
               c.storage.local.set( // saving
@@ -161,7 +166,7 @@
 
   let clickHandler = function(e){
     disable();
-    saveRemovedElement(e.toElement).then(() => {
+    saveRemovedElement(e).then(() => {
       e.target.remove();
     });
     e.preventDefault();
