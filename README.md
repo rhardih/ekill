@@ -28,7 +28,7 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
-**1.5**
+**1.6**
 
 - Added an options page 
 - made it possible to store elements a user has removed
@@ -42,6 +42,10 @@ MIT: http://rhardih.mit-license.org
 - started using bootstrap to style elements in options page
 - made some design pages to the options page to make it work better on firefox
 - fixed sync issues with firefox
+
+**1.5**
+
+- Adds light icons for Firefox dark theme.
 
 **1.4**
 
