@@ -22,7 +22,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["ekill.js"],
-      "css": ["ekill.css"]
+      "css": ["ekill.css"],
+      "run_at": "document_end"
     }
   ],
   "icons": {
