@@ -19,8 +19,8 @@
     getStoredSettings.then(function (settings) {
       //console.log(settings);
       if (settings.keepRemoved === 'true') { // user wants to remove previously removed elements
-        chrome.storage.local.get({ [`ekill-replace-${document.URL}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
-          removeSaved(result[`ekill-replace-${document.URL}`]);
+        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+          removeSaved(result[`ekill-replace-${window.location.hostname}`]);
           //console.log(result)
         });
       }
@@ -55,7 +55,7 @@
   let checkDelayed = function (elementArray) {
     let ekillStorage = [...elementArray];
     let intervalCount = 0;
-    let timeOutCount = 5; // how many times to try before we clear the interval?.
+    let timeOutCount = 18; // how many times to try before we clear the interval?.
     let interval = setInterval(function () {
       if (intervalCount >= timeOutCount) {
         clearInterval(interval);
@@ -75,7 +75,7 @@
         intervalCount++;
       }
 
-    }, 4000);
+    }, 1000);
   }
 
 
@@ -97,14 +97,14 @@
 
 
   let saveRemovedElement = function (e) {
-    getStoredSettings.then(function (settings) { // getting the storage on each click so the user does not have to reload page after they change ekill's settings.
-      if (settings.keepRemoved === 'true') { // we only save elements to remove if this is true
+    getStoredSettings.then(function (settings) { 
+      if (settings.keepRemoved === 'true') { 
         // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
-        chrome.storage.local.get({ [`ekill-replace-${document.URL}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+        chrome.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
           //console.log(result);
-          let temp = result[`ekill-replace-${document.URL}`]; // temporary variable to modify
-          let outerHTML_Cleanup = e.target.outerHTML.toString(); // cleanup auto-generated empty classes that cause the program to not match correctly
-          let element = e.target; // only a temporary storage so we can remove the class if its empty
+          let temp = result[`ekill-replace-${window.location.hostname}`]; // temporary variable to modify
+          let outerHTML_Cleanup = e.target.outerHTML.toString(); 
+          let element = e.target; 
           if (e.target.classList.length === 0) { // empty classes seem to break matching
             element.removeAttribute('class');
             outerHTML_Cleanup = element.outerHTML.toString();
@@ -112,7 +112,7 @@
           temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
           chrome.storage.local.set( // saving
             {
-              [`ekill-replace-${document.URL}`]: temp
+              [`ekill-replace-${window.location.hostname}`]: temp
             }, function () {
               console.info('finished saving element'); // not needed but its sparkling
             });
