@@ -39,7 +39,7 @@ MIT: http://rhardih.mit-license.org
 - moved from replacing the whole HTML document to the built in remove()
 - added checking for delayed items
 - changed autoremove-script to work on the entire website instead of just sub-routes
-- added a css file for options page
+- started using bootstrap to style elements in options page
 - made some design pages to the options page to make it work better on firefox
 
 **1.4**
