@@ -15,6 +15,7 @@
 
 
   let docload = function (e) { // document loaded
+    console.log('document loaded')
     getStoredSettings.then(function (settings) {
       //console.log(settings);
       if (settings.keepRemoved === 'true') { // user wants to remove previously removed elements
@@ -27,29 +28,54 @@
   };
 
 
-  let removeSaved = function (elementArray) { // removed saved elements 
+  let removeSaved = function (elementArray) {
     console.warn('removing previously removed HTML elements')
-    let ekillStorage = elementArray; // not sure why i did this?..
+    let ekillStorage = [...elementArray];
+    console.log(ekillStorage)
+    for (let i = 0; i < ekillStorage.length + 1; i++) { // loop over stored HTML elements
+      if (i >= ekillStorage.length) {
+        checkDelayed(ekillStorage);
+        break;
+      } else {
+        console.log(i)
+        console.log(ekillStorage.length)
+        let elementDump = document.getElementsByTagName(ekillStorage[i].element); // get a list of all the elements in this HTML page that is the same as the tag stored here e.g: <span> <div> etc tc
+        for (let elem = 0; elem < elementDump.length; elem++) {
+          //console.log(elementDump[elem])
+          if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
+            elementDump[elem].remove();
+            ekillStorage.splice(i, 1); // whenever we find an element that matched we want to get rid of it to make delayed checking a bit faster
+            break;
+          }
+        } // forloop 2
+      }
+    } // forloop 1
+  }
 
-
-    for (let i = 0; i < ekillStorage.length; i++) { // loop over stored HTML elements
-
-
-      let elementDump = document.getElementsByTagName(ekillStorage[i].element); // get a list of all the elements in this HTML page that is the same as the tag stored here e.g: <span> <div> etc tc
-      //console.log(elementDump);
-      for (let elem = 0; elem < elementDump.length; elem++) { // elem here is an html element
-        //console.log(elementDump[elem])
-        if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) { // cross checking if the outerHTMLs are the same between the stored value and the current itteration value
-          elementDump[elem].remove(); // remove the element.
-          break; // break out of the loop if we found the element to keep that CPU nice and cold..
+  let checkDelayed = function (elementArray) {
+    let ekillStorage = [...elementArray];
+    let intervalCount = 0;
+    let timeOutCount = 5; // how many times to try before we clear the interval?.
+    let interval = setInterval(function () {
+      if (intervalCount >= timeOutCount) {
+        clearInterval(interval);
+      } else if (ekillStorage.length === 0) { // already found & removed all elements
+        clearInterval(interval);
+      } else {
+        for (let i = 0; i < ekillStorage.length; i++) {
+          let elementDump = document.getElementsByTagName(ekillStorage[i].element);
+          for (let elem = 0; elem < elementDump.length; elem++) {
+            if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
+              elementDump[elem].remove();
+              ekillStorage.splice(i, 1);
+              break;
+            }
+          }
         }
+        intervalCount++;
       }
 
-
-
-
-    }
-
+    }, 4000);
   }
 
 
@@ -70,8 +96,6 @@
   };
 
 
-
-
   let saveRemovedElement = function (e) {
     getStoredSettings.then(function (settings) { // getting the storage on each click so the user does not have to reload page after they change ekill's settings.
       if (settings.keepRemoved === 'true') { // we only save elements to remove if this is true
@@ -81,8 +105,8 @@
           let temp = result[`ekill-replace-${document.URL}`]; // temporary variable to modify
           let outerHTML_Cleanup = e.target.outerHTML.toString(); // cleanup auto-generated empty classes that cause the program to not match correctly
           let element = e.target; // only a temporary storage so we can remove the class if its empty
-          if(e.target.classList.length === 0){ // empty classes seem to break matching
-            element.removeAttribute('class'); 
+          if (e.target.classList.length === 0) { // empty classes seem to break matching
+            element.removeAttribute('class');
             outerHTML_Cleanup = element.outerHTML.toString();
           }
           temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
