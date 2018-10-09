@@ -5,26 +5,43 @@
         <title>ekill</title>
         <link rel="stylesheet" href="settings.css">
         <meta charset="utf-8"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     </head>
     <body>
-        <h2>Settings</h2>
+    <div class="container">
+    <br />
+
+    <div style="width:8rem;" class="mx-auto">
+        <img  src='./skull-and-bones-128.png' alt="404" />
+    </div>
+    
+        <h1 style="text-align:center">Settings</h1>
         <hr />
         <br />  
         <label title="automagically remove previously removed elements from a page" for="keepRemoved">Save removed elements</label>
-        <select title="automagically remove previously removed elements from a page" id='keepRemoved'>
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-        </select>
-        <button id='save'>Save</button>
+       <div class="row">
+            <div class="col-11">
+                <select class="form-control" title="automagically remove previously removed elements from a page" id='keepRemoved'>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="col-1"><button class="btn  btn-primary float-right" id='save'>Save</button></div>
+        </div>
         <br />
         
         <h2 title="remove ekill storage from a website causing it to return to the websites original behavior">Advanced clearing</h2>
         <h5 title="remove ekill storage from a website causing it to return to the websites original behavior">Removed the wrong elements? or just want to reset the functionality? </h5>
-        <div id='URLBOX'> </div>
+
+        <ul id='URLBOX' class="list-group">
+  
+
+</ul>
 
         
        
 
         <script src="settings.js"></script>
+        </div>
     </body>
 </html>
