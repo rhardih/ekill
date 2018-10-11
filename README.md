@@ -28,6 +28,11 @@ MIT: http://rhardih.mit-license.org
 
 # Changelog
 
+**1.7**
+- moved to an Xpath based aproach for dynamic contents that change innerHTML or style
+- added standard methods on document to handle xpath
+- script now works for both chrome and firefox (moved from non-standard IE implementations like toElement)
+
 **1.6**
 
 - Added an options page 

@@ -1,11 +1,48 @@
 (function (c, d) {
+  document.getElementByXPath = function (sValue) { var a = this.evaluate(sValue, this, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); if (a.snapshotLength > 0) { return a.snapshotItem(0); } };
+  document.getElementsByXPath = function (sValue) { var aResult = new Array(); var a = this.evaluate(sValue, this, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null); for (var i = 0; i < a.snapshotLength; i++) { aResult.push(a.snapshotItem(i)); } return aResult; };
+  document.removeElementsByXPath = function (sValue) { var a = this.evaluate(sValue, this, null, XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE, null); for (var i = 0; i < a.snapshotLength; i++) { a.snapshotItem(i).parentNode.removeChild(a.snapshotItem(i)); } };
+
+
+  function createXPathFromElement(elm) {
+    return new Promise(resolve => {
+      var allNodes = document.getElementsByTagName('*');
+      for (var segs = []; elm && elm.nodeType == 1; elm = elm.parentNode) {
+        if (elm.hasAttribute('id')) {
+          var uniqueIdCount = 0;
+          for (var n = 0; n < allNodes.length; n++) {
+            if (allNodes[n].hasAttribute('id') && allNodes[n].id == elm.id) uniqueIdCount++;
+            if (uniqueIdCount > 1) break;
+          };
+          if (uniqueIdCount == 1) {
+            segs.unshift('id("' + elm.getAttribute('id') + '")');
+            resolve(segs.join('/')); 
+          } else {
+            segs.unshift(elm.localName.toLowerCase() + '[@id="' + elm.getAttribute('id') + '"]');
+          }
+        } else if (elm.hasAttribute('class')) {
+          segs.unshift(elm.localName.toLowerCase() + '[@class="' + elm.getAttribute('class') + '"]');
+        } else {
+          for (i = 1, sib = elm.previousSibling; sib; sib = sib.previousSibling) {
+            if (sib.localName == elm.localName) i++;
+          };
+          segs.unshift(elm.localName.toLowerCase() + '[' + i + ']');
+        };
+      };
+      let x = segs.length ? '/' + segs.join('/') : null;
+      if (segs.length) { x = '/' + segs.join('/') } else { x = null }
+      resolve(x);
+
+    })
+  };
+
 
   let getStoredSettings = new Promise(function (resolve, reject) { // making this a promise due to the async nature of extension storage
     chrome.storage.sync.get({
       keepRemoved: false
     }, function (items) {
       if (!items) {
-        resolve({ keepRemoved: false }); // firefox does not seem to support default variables??
+        resolve({ keepRemoved: false }); 
       } else {
         resolve(items);
       }
@@ -18,29 +55,29 @@
     getStoredSettings.then(function (settings) {
       if (settings.keepRemoved === 'true' || settings.keepRemoved === true) {
         c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // the "value" in this pair is the default value we get when nothing has been stored yet
-          removeSaved(result[`ekill-replace-${window.location.hostname}`]);
+          removeSavedFromDOM(result[`ekill-replace-${window.location.hostname}`]);
         });
       }
     })
   };
 
 
-  let removeSaved = function (elementArray) {
+  let removeSavedFromDOM = function (elementArray) {
+    console.log(elementArray);
     console.warn('removing previously removed HTML elements')
     let ekillStorage = [...elementArray];
     for (let i = 0; i < ekillStorage.length + 1; i++) {
-      if (i >= ekillStorage.length) {
+      console.log(i);
+      if (i === ekillStorage.length) {
+        console.log('started delayed checking')
         checkDelayed(ekillStorage);
         break;
       } else {
-        let elementDump = document.getElementsByTagName(ekillStorage[i].element); // ekillStorage[i].element's value is usually a span, div etc tec
-        for (let elem = 0; elem < elementDump.length; elem++) {
-          if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-            elementDump[elem].remove();
-            ekillStorage.splice(i, 1); // whenever we find an element that matched we want to get rid of it to make delayed checking a bit faster
-            break;
-          }
-        } // forloop 2
+        try {
+          document.removeElementsByXPath(ekillStorage[i].xpath);
+        } catch (error) {
+          console.log(error)
+        }
       }
     } // forloop 1
   }
@@ -56,15 +93,12 @@
         clearInterval(interval);
       } else {
         for (let i = 0; i < ekillStorage.length; i++) {
-          let elementDump = document.getElementsByTagName(ekillStorage[i].element);
-          for (let elem = 0; elem < elementDump.length; elem++) {
-            if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-              elementDump[elem].remove();
-              ekillStorage.splice(i, 1);
-              break;
-            }
+          try {
+            document.removeElementsByXPath(ekillStorage[i].xpath);
+          } catch (error) {
+            console.log(error)
           }
-        }
+        } // forloop 1
         intervalCount++;
       }
 
@@ -90,35 +124,42 @@
 
 
   let saveRemovedElement = function (e) {
-    getStoredSettings.then(function (settings) {
-      if (settings.keepRemoved === 'true') {
-        // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
-        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
-          let temp = result[`ekill-replace-${window.location.hostname}`];
-          let outerHTML_Cleanup = e.target.outerHTML.toString();
-          let element = e.target;
-          if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
-            element.removeAttribute('class');
-            outerHTML_Cleanup = element.outerHTML.toString();
-          }
-          temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
-          c.storage.local.set( // saving
-            {
-              [`ekill-replace-${window.location.hostname}`]: temp
-            }, function () {
-            });
-
-        });
+    return new Promise((resolve) => {
+      //console.log(e.currentTarget);
+      let element = e.target;
+      if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
+        element.removeAttribute('class');
       }
+      getStoredSettings.then(function (settings) {
+        if (settings.keepRemoved === 'true') {
+          // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
+          c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function (result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+
+            let temp = result[`ekill-replace-${window.location.hostname}`];
+            createXPathFromElement(e.target).then(function (res) {
+              temp.push({ "element": e.localName, "xpath": res }); // properties we want to save from the selected HTML element
+              c.storage.local.set( // saving
+                {
+                  [`ekill-replace-${window.location.hostname}`]: temp
+                }, function () {
+                  resolve();
+                });
+            })
+
+          });
+        } else {
+          resolve();
+        }
+      })
     })
   }
 
 
   let clickHandler = function (e) {
     disable();
-    saveRemovedElement(e);
-
-    e.target.remove();
+    saveRemovedElement(e).then(() => {
+      e.target.remove();
+    });
     e.preventDefault();
     e.stopPropagation();
   };
