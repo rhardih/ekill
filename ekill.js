@@ -74,30 +74,30 @@
     };
 
     let saveRemovedElement = function(e) {
-      if (settings.keepRemoved === 'true') {
-        // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
-        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
-          let temp = result[`ekill-replace-${window.location.hostname}`];
-          let outerHTML_Cleanup = e.target.outerHTML.toString();
-          let element = e.target;
-          if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
-            element.removeAttribute('class');
-            outerHTML_Cleanup = element.outerHTML.toString();
-          }
-          temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
-          c.storage.local.set(
-            {
-            [`ekill-replace-${window.location.hostname}`]: temp
-          }, function() {
-          });
-
+      // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
+      c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
+        let temp = result[`ekill-replace-${window.location.hostname}`];
+        let outerHTML_Cleanup = e.target.outerHTML.toString();
+        let element = e.target;
+        if (e.target.classList.length === 0) { // fix for:  'empty classes seem to break matching'
+          element.removeAttribute('class');
+          outerHTML_Cleanup = element.outerHTML.toString();
+        }
+        temp.push({ "element": e.target.localName, "outerHTML": outerHTML_Cleanup }); // properties we want to save from the selected HTML element
+        c.storage.local.set(
+          {
+          [`ekill-replace-${window.location.hostname}`]: temp
+        }, function() {
         });
-      }
+
+      });
     }
 
     let clickHandler = function(e) {
       disable();
-      saveRemovedElement(e);
+
+      if (settings.keepRemoved === "true")
+        saveRemovedElement(e);
 
       e.target.remove();
       e.preventDefault();
