@@ -167,13 +167,13 @@
   // Note even though Firefox uses promises, ie supports the 'chrome' object and
   // callbacks as well:
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Chrome_incompatibilities#Firefox_supports_both_chrome_and_browser_namespaces
-  chrome.storage.sync.get({
+  c.storage.sync.get({
     "ekillSettings": {
       keepRemoved: "false"
     }
   }, function(item) {
-    if (chrome.runtime.lastError) {
-      console.error(browser.runtime.lastError);
+    if (c.runtime.lastError) {
+      console.error(c.runtime.lastError);
     } else {
       contentAction(item.ekillSettings);
     }
