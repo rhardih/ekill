@@ -1,4 +1,30 @@
 (function(c, d) {
+  // Note even though Firefox uses promises, ie supports the 'chrome' object and
+  // callbacks as well:
+  // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Chrome_incompatibilities#Firefox_supports_both_chrome_and_browser_namespaces
+  chrome.storage.sync.get({
+    "ekillSettings": {
+      keepRemoved: "false"
+    }
+  }, function(item) {
+    if (chrome.runtime.lastError) {
+      console.error(browser.runtime.lastError);
+    } else {
+      let settings = item.ekillSettings;
+
+      // No need to wait for a 'DOMContentLoaded' event since the manifest
+      // specifies:
+      //
+      //   "run_at": "document_end"
+      //
+      if (settings.keepRemoved === "true") {
+        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) {
+          removeSaved(result[`ekill-replace-${window.location.hostname}`]);
+        });
+      }
+    }
+  });
+
   let getStoredSettings = new Promise(function(resolve, reject) { // making this a promise due to the async nature of extension storage
     chrome.storage.sync.get({
       keepRemoved: false
@@ -10,16 +36,6 @@
       }
     });
   });
-
-  let docload = function(e) {
-    getStoredSettings.then(function(settings) {
-      if (settings.keepRemoved === 'true' || settings.keepRemoved === true) {
-        c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) {
-          removeSaved(result[`ekill-replace-${window.location.hostname}`]);
-        });
-      }
-    })
-  };
 
   let removeSaved = function(elementArray) {
     console.warn('removing previously removed HTML elements')
@@ -174,5 +190,4 @@
   };
 
   c.runtime.onMessage.addListener(msgHandler);
-  window.addEventListener("load", docload);
 })(chrome, document);

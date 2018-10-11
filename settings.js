@@ -1,15 +1,32 @@
 function saveOptions() {
-  let keepRemoved_Value = document.getElementById('keepRemoved').value;
-  chrome.storage.sync.set({ keepRemoved: keepRemoved_Value }, function() {
+  let keepRemovedStringValue = document.getElementById('keepRemoved').value;
 
+  let settings = {
+    ekillSettings: {
+      keepRemoved: keepRemovedStringValue
+    }
+  }
+
+  chrome.storage.sync.set(settings, function() {
+    if (chrome.runtime.lastError) {
+      console.error(browser.runtime.lastError);
+    }
   });
 }
 
 function previousSettings() {
   chrome.storage.sync.get({
-    keepRemoved: false
-  }, function(items) {
-    document.getElementById('keepRemoved').value = items.keepRemoved;
+    "ekillSettings": {
+      keepRemoved: false
+    }
+  }, function(item) {
+    if (chrome.runtime.lastError) {
+      console.error(browser.runtime.lastError);
+    } else {
+      let settings = item.ekillSettings;
+
+      document.getElementById('keepRemoved').value = settings.keepRemoved;
+    }
   });
 }
 
