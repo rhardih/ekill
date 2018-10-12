@@ -1,4 +1,4 @@
-(function(c, d) {
+(function(c, d, l) {
   let contentAction = function(settings) {
     // No need to wait for a 'DOMContentLoaded' event since the manifest
     // specifies:
@@ -73,6 +73,99 @@
       e.stopPropagation();
     };
 
+    /**
+     * Generates a selector string which will uniquely return the specified
+     * 'element', when passed to .querySelector().
+     *
+     * The selector is complete. This means each node in the path from
+     * 'element' up the DOM tree, to the first uniquely identifiable node, is
+     * referenced within the selector.
+     *
+     * E.g. this snippet:
+     *
+     * <div id="foo"><ul><li><p></p></li></ul></div>
+     *
+     * Will yield the following DOMString:
+     *
+     * div#foo > ul > li > p
+     *
+     * To determine uniqueness, id, classes and sibling index is considered,
+     * according this order of precedence:
+     *
+     * 1. id
+     * 2. classes
+     * 3. index
+     *
+     * @param {Element} element - Target DOM element
+     * @returns {string} Selector DOMString
+     */
+    let generateDOMString = element => {
+      let collectionToArray = collection => {
+        return Array.prototype.slice.call(collection);
+      };
+
+      // Go up the DOM tree from the target element and remember each parent
+      // along the way
+      let selectorParts = [];
+      let currentElement = element;
+      let subRootFound = false;
+      while (currentElement.localName !== "html" && !subRootFound) {
+        let parentElement = currentElement.parentElement;
+        let selectorPart = currentElement.localName;
+
+        let useId = currentElement.id !== "" &&
+          // Check whether it is viable to use id as selector, it might not be
+          // unique
+          parentElement.querySelectorAll(
+            `#${currentElement.id}`).length === 1;
+
+        // In case id isn't a possibility, perhaps classes can be used instead
+        let classesSelector = "";
+        currentElement.classList.forEach(klass => {
+          classesSelector += `.${klass}`;
+        });
+
+        let useClasses = classesSelector !== "" && parentElement.
+          querySelectorAll(classesSelector).length === 1;
+
+        if (useId) {
+          selectorPart += `#${currentElement.id}`
+
+          // Since we can uniquely use the current element as root, there's no
+          // need to walk further up the tree
+          subRootFound = true;
+        } else if(useClasses) {
+          selectorPart += classesSelector;
+
+          // Same as above; if this combination of classes can uniquely target a
+          // single element, no need to go further
+          if (d.querySelectorAll(classesSelector).length === 1)
+            subRootFound = true;
+        } else {
+          // In case both id and class based selectors are non-viable, use
+          // nth-of-type instead where needed
+
+          // Find all siblings of the same tag
+          let childrenArr = collectionToArray(parentElement.children);
+          let sameTagChildren = childrenArr.filter(child => {
+            return child.localName === currentElement.localName;
+          });
+
+          if (sameTagChildren.length > 1) {
+            let currentElementIndex = childrenArr.indexOf(currentElement);
+
+            // + 1 since css selectors aren't zero based
+            selectorPart += `:nth-of-type(${currentElementIndex + 1})`
+          }
+        }
+
+        selectorParts.unshift(selectorPart);
+        currentElement = parentElement;
+      }
+
+      return selectorParts.join(" > ");
+    }
+
     let saveRemovedElement = function(element) {
       // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
       c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) { // try and get data for this URL.. if nothing is there we get [] (empty array)
@@ -88,7 +181,28 @@
           [`ekill-replace-${window.location.hostname}`]: temp
         }, function() {
         });
+      });
 
+      c.storage.local.get({
+        "ekillHitlist": "{}"
+      }, function(item) {
+        if (c.runtime.lastError) {
+          console.error(c.runtime.lastError);
+        } else {
+          let hitList = JSON.parse(item.ekillHitlist);
+          let selector = generateDOMString(element);
+          hitList[l.hostname] = hitList[l.hostname] || {};
+          hitList[l.hostname][l.pathname] = selector;
+
+          c.storage.local.set({
+            "ekillHitlist": JSON.stringify(hitList)
+          }, function() {
+            if (c.runtime.lastError) {
+              console.error(c.runtime.lastError);
+            }
+          });
+
+        }
       });
     }
 
@@ -177,4 +291,4 @@
       contentAction(item.ekillSettings);
     }
   });
-})(chrome, document);
+})(chrome, document, location);
