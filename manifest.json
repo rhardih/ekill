@@ -40,14 +40,12 @@
     "scripts": ["background.js"],
     "persistent": false
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["ekill.js"],
-      "css": ["ekill.css"],
-      "run_at": "document_end"
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["js/testable.js", "ekill.js"],
+    "css": ["ekill.css"],
+    "run_at": "document_end"
+  }],
   "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com; object-src 'self'",
   "icons": {
     "16": "skull-and-bones-16.png",

@@ -1,4 +1,4 @@
-(function(c, d, l) {
+(function(c, d, l, ekill) {
   let contentAction = function(settings) {
     // No need to wait for a 'DOMContentLoaded' event since the manifest
     // specifies:
@@ -71,64 +71,6 @@
     let outHandler = function(e) {
       e.target.classList.remove("ekill");
       e.stopPropagation();
-    };
-
-    /**
-     * Converts various collections, lists etc. into a pure array.
-     *
-     * @param {Object} notArray - Any convertible non-array type
-     * @returns {Array}
-     */
-    let toArray = notArray => Array.prototype.slice.call(notArray);
-
-    /**
-     * Generates a recursive object structure representing the subtree of the
-     * DOM containing the specified element.
-     *
-     * The outhermost layer of the object will be for the 'body' element. Each
-     * further node on the path down to 'element' will be attached via a 'child'
-     * property.
-     *
-     * @param {Element} element - target DOM element
-     * @returns {Object} Representation of the subtree in the following
-     * format:
-     *
-     *   Stucture = {
-     *     localName: {String}
-     *     id: {String}
-     *     classes: {String}
-     *     el: {Element}
-     *     child: {Structure|undefined}
-     *   }
-     */
-    let generateElementHierarchy = element => {
-      let newObject = () => {
-        return {
-          localName: "",
-          id: "",
-          classes: "",
-          el: undefined,
-          child: undefined
-        };
-      }
-
-      let currentElement = element;
-      let currentObject = undefined;
-      let lastObject = undefined;
-      while (currentElement.localName !== "html") {
-        currentObject = newObject();
-        currentObject.el = currentElement;
-        currentObject.localName = currentElement.localName;
-        currentObject.id = currentElement.id;
-        currentObject.classes = toArray(currentElement.classList).
-          reduce((acc, val) => `${acc}.${val}`, "");
-        currentObject.child = lastObject;
-
-        lastObject = currentObject;
-        currentElement = currentElement.parentElement;
-      }
-
-      return currentObject;
     };
 
     /**
@@ -209,7 +151,7 @@
             // nth-of-type instead where needed
 
             // Find all siblings of the same tag
-            let childrenArray = toArray(parentElement.children);
+            let childrenArray = ekill.toArray(parentElement.children);
             let sameTagChildren = childrenArray.
               filter(child => child.localName === currentObject.localName);
 
@@ -255,7 +197,7 @@
           console.error(c.runtime.lastError);
         } else {
           let hitList = JSON.parse(item.ekillHitlist);
-          let hierarchy = generateElementHierarchy(element);
+          let hierarchy = ekill.generateElementHierarchy(element);
           let selector = elementHierarchyToDOMString(hierarchy);
 
           hitList[l.hostname] = hitList[l.hostname] || {};
@@ -358,4 +300,4 @@
       contentAction(item.ekillSettings);
     }
   });
-})(chrome, document, location);
+})(chrome, document, location, window.ekill);

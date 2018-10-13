@@ -1,0 +1,40 @@
+<head>
+	<meta charset="utf-8">
+	<title>Mocha Tests</title>
+	<link href="https://unpkg.com/mocha@5.2.0/mocha.css" rel="stylesheet" />
+</head>
+<body>
+	<div id="mocha"></div>
+
+  <script src="https://unpkg.com/chai/chai.js"></script>
+  <script src="https://unpkg.com/mocha@5.2.0/mocha.js"></script>
+
+  <div id="fixtures">
+    <div id="toArrayTest" class="lorem ipsum dolor">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+    <div id="generateElementHierarchyTest">
+      <!-- nth-of-type -->
+      <div></div>
+      <div class="foo">
+        <div class="bar"></div>
+        <div class="bar">
+          <p id="gehTarget"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>mocha.setup('bdd')</script>
+
+  <script src="/js/testable.js"></script>
+  <script src="/test/test.js"></script>
+
+	<script type="module">
+		mocha.checkLeaks();
+		mocha.run();
+  </script>
+</body>
+</html>
