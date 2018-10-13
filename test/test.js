@@ -50,4 +50,14 @@ describe('ekill', function() {
       });
     });
   });
+
+  describe('#elementHierarchyToDOMString', function() {
+    it('should return selector for element', function() {
+      let target = document.querySelector('p[data-name=gehTarget]');
+      let hierarchy = ekill.generateElementHierarchy(target);
+      let ds = ekill.elementHierarchyToDOMString(hierarchy);
+
+      expect(ds).to.equal('.foo > div:nth-of-type(0) > p');
+    });
+  });
 });
