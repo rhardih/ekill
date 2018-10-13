@@ -74,10 +74,69 @@
     };
 
     /**
-     * Generates a selector string which will uniquely return the specified
-     * 'element', when passed to .querySelector().
+     * Converts various collections, lists etc. into a pure array.
      *
-     * The selector is complete. This means each node in the path from
+     * @param {Object} notArray - Any convertible non-array type
+     * @returns {Array}
+     */
+    let toArray = notArray => Array.prototype.slice.call(notArray);
+
+    /**
+     * Generates a recursive object structure representing the subtree of the
+     * DOM containing the specified element.
+     *
+     * The outhermost layer of the object will be for the 'body' element. Each
+     * further node on the path down to 'element' will be attached via a 'child'
+     * property.
+     *
+     * @param {Element} element - target DOM element
+     * @returns {Object} Representation of the subtree in the following
+     * format:
+     *
+     *   Stucture = {
+     *     localName: {String}
+     *     id: {String}
+     *     classes: {String}
+     *     el: {Element}
+     *     child: {Structure|undefined}
+     *   }
+     */
+    let generateElementHierarchy = element => {
+      let newObject = () => {
+        return {
+          localName: "",
+          id: "",
+          classes: "",
+          el: undefined,
+          child: undefined
+        };
+      }
+
+      let currentElement = element;
+      let currentObject = undefined;
+      let lastObject = undefined;
+      while (currentElement.localName !== "html") {
+        currentObject = newObject();
+        currentObject.el = currentElement;
+        currentObject.localName = currentElement.localName;
+        currentObject.id = currentElement.id;
+        currentObject.classes = toArray(currentElement.classList).
+          reduce((acc, val) => `${acc}.${val}`, "");
+        currentObject.child = lastObject;
+
+        lastObject = currentObject;
+        currentElement = currentElement.parentElement;
+      }
+
+      return currentObject;
+    };
+
+    /**
+     * Generates a selector string from a element hierarchy produced by
+     * generateElementHierarchy. The selector string will uniquely return the
+     * bottom most element in the hierarchy, when passed to .querySelector().
+     *
+     * The selector is fully qualified. This means each node in the path from
      * 'element' up the DOM tree, to the first uniquely identifiable node, is
      * referenced within the selector.
      *
@@ -87,7 +146,7 @@
      *
      * Will yield the following DOMString:
      *
-     * div#foo > ul > li > p
+     * #foo > ul > li > p
      *
      * To determine uniqueness, id, classes and sibling index is considered,
      * according this order of precedence:
@@ -96,75 +155,81 @@
      * 2. classes
      * 3. index
      *
-     * @param {Element} element - Target DOM element
-     * @returns {string} Selector DOMString
+     * @param {Object} hierarchy - Hierarchy object returned by
+     * generateElementHierarchy
+     * @returns {String} Selector DOMString
      */
-    let generateDOMString = element => {
-      let collectionToArray = collection => {
-        return Array.prototype.slice.call(collection);
-      };
-
-      // Go up the DOM tree from the target element and remember each parent
-      // along the way
+    let elementHierarchyToDOMString = hierarchy => {
       let selectorParts = [];
-      let currentElement = element;
-      let subRootFound = false;
-      while (currentElement.localName !== "html" && !subRootFound) {
-        let parentElement = currentElement.parentElement;
-        let selectorPart = currentElement.localName;
+      let currentObject = hierarchy;
+      let parentElement = d; // document will always be a parent
+      while (currentObject !== undefined) {
+        let selectorPart = "";
+        let uniqueByIdInDocument = false;
+        let uniqueByIdInParent = false;
+        let idSelector = `#${currentObject.id}`;
 
-        let useId = currentElement.id !== "" &&
-          // Check whether it is viable to use id as selector, it might not be
-          // unique
-          parentElement.querySelectorAll(
-            `#${currentElement.id}`).length === 1;
+        if (currentObject.id !== "") {
+          uniqueByIdInDocument = d.querySelectorAll(idSelector).length === 1;
+          // Will be the same in first iteration since d === parentElement
+          uniqueByIdInParent = parentElement.querySelectorAll(idSelector).
+            length === 1;
+        }
 
-        // In case id isn't a possibility, perhaps classes can be used instead
-        let classesSelector = "";
-        currentElement.classList.forEach(klass => {
-          classesSelector += `.${klass}`;
-        });
+        if (uniqueByIdInDocument) {
+          selectorPart = idSelector;
 
-        let useClasses = classesSelector !== "" && parentElement.
-          querySelectorAll(classesSelector).length === 1;
-
-        if (useId) {
-          selectorPart += `#${currentElement.id}`
-
-          // Since we can uniquely use the current element as root, there's no
-          // need to walk further up the tree
-          subRootFound = true;
-        } else if(useClasses) {
-          selectorPart += classesSelector;
-
-          // Same as above; if this combination of classes can uniquely target a
-          // single element, no need to go further
-          if (d.querySelectorAll(classesSelector).length === 1)
-            subRootFound = true;
+          // Since this element is *globally* unique by id, any parts of the
+          // selector created until now can be disregarded
+          selectorParts = [];
+        } else if (uniqueByIdInParent) {
+          selectorPart = idSelector;
         } else {
-          // In case both id and class based selectors are non-viable, use
-          // nth-of-type instead where needed
+          // Try with classes when id fails
+          let uniqueByClassesInDocument = false;
+          let uniqueByClassesInParent = false;
 
-          // Find all siblings of the same tag
-          let childrenArr = collectionToArray(parentElement.children);
-          let sameTagChildren = childrenArr.filter(child => {
-            return child.localName === currentElement.localName;
-          });
+          if (currentObject.classes !== "") {
+            uniqueByClassesInDocument = d.
+              querySelectorAll(currentObject.classes).length === 1;
+            uniqueByClassesInParent = parentElement.
+              querySelectorAll(currentObject.classes).length === 1;
+          }
 
-          if (sameTagChildren.length > 1) {
-            let currentElementIndex = childrenArr.indexOf(currentElement);
+          if (uniqueByClassesInDocument) {
+            selectorPart = currentObject.classes;
 
-            // + 1 since css selectors aren't zero based
-            selectorPart += `:nth-of-type(${currentElementIndex + 1})`
+            // Same as above; if classes can uniquely target the element,
+            // previous parts of the selector can be thrown away
+            selectorParts = [];
+          } else if (uniqueByClassesInParent) {
+            selectorPart = currentObject.classes;
+          } else {
+            // In case both id and class based selectors are non-viable, use
+            // nth-of-type instead where needed
+
+            // Find all siblings of the same tag
+            let childrenArray = toArray(parentElement.children);
+            let sameTagChildren = childrenArray.
+              filter(child => child.localName === currentObject.localName);
+
+            if (sameTagChildren.length > 1) {
+              let currentObjectIndex = childrenArray.indexOf(currentObject.el);
+
+              selectorPart = `${currentObject.localName}:nth-of-type(${currentObjectIndex})`
+            } else {
+              selectorPart = currentObject.localName;
+            }
           }
         }
 
-        selectorParts.unshift(selectorPart);
-        currentElement = parentElement;
+        selectorParts.push(selectorPart);
+        parentElement = currentObject.el;
+        currentObject = currentObject.child;
       }
 
       return selectorParts.join(" > ");
-    }
+    };
 
     let saveRemovedElement = function(element) {
       // note .. the url is very specific .. not sure if this should be like this or apply to the whole website e.g facebook.com/*
@@ -190,7 +255,9 @@
           console.error(c.runtime.lastError);
         } else {
           let hitList = JSON.parse(item.ekillHitlist);
-          let selector = generateDOMString(element);
+          let hierarchy = generateElementHierarchy(element);
+          let selector = elementHierarchyToDOMString(hierarchy);
+
           hitList[l.hostname] = hitList[l.hostname] || {};
           hitList[l.hostname][l.pathname] = selector;
 
