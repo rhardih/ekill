@@ -166,4 +166,66 @@ window.ekill = window.ekill || {};
 
     return selectorParts.join(" > ");
   };
+
+  /**
+   * Updates and maintains the ekill hit list
+   *
+   * @param {Object} hitList - existing hit list
+   * @param {String} hostname
+   * @param {String} pathname
+   * @param {String} selector - DOMString as returned by
+   * elementHierarchyToDOMString
+   * @return {Object} A new and revised hit list
+   */
+  ekill.updateHitList = (hitList, hostname, pathname, selector) => {
+    hitList[hostname] = hitList[hostname] || {};
+
+    let paths = hitList[hostname];
+    paths["*"] = paths["*"] || [];
+    let wildcardAlready = paths["*"].indexOf(selector) !== -1;
+
+    if (!wildcardAlready) {
+      paths[pathname] = paths[pathname] || [];
+
+      // If the same element has been killed under the same domain but for
+      // different pathnames, hoist it to be a wildcard match
+      let selectors = paths[pathname];
+      let addToWildcard = false;
+      for (let p in paths) {
+        if (paths.hasOwnProperty(p)) {
+          if (p === "*") continue;
+          if (p === pathname) continue;
+
+          let selectorIndex = paths[p].indexOf(selector);
+
+          if (selectorIndex !== -1) {
+            addToWildcard = true;
+
+            // Remove from all other paths, since it's now a wildcard match
+            paths[p].splice(selectorIndex, 1);
+          }
+        }
+      }
+
+      if (addToWildcard) {
+        paths["*"].push(selector);
+      } else {
+        // Only append selector if it's not already there
+        if (selectors.indexOf(selector) === -1)
+          selectors.push(selector);
+
+      }
+
+      // Clean up potentially empty paths
+      for (let p in paths) {
+        if (paths.hasOwnProperty(p)) {
+          // Remove from all other paths, since it's now a wildcard match
+          if (paths[p].length === 0)
+            delete paths[p];
+        }
+      }
+    }
+
+    return hitList;
+  }
 })(window.ekill)

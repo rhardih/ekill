@@ -124,4 +124,101 @@ describe('ekill', function() {
       expect(selected).to.equal(target);
     });
   });
+
+  describe("#updateHitList", function() {
+    it("should add new hits", function() {
+      let hitList = {};
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup"
+          ]
+        }
+      }
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+    });
+
+    it("should append hits on the same page and only once", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0"
+          ]
+        }
+      }
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0",
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-1"
+      )
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-1"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+      expect(hitList["example.com"]["/foo"]).to.have.members([
+        "body > div#annoying-popup-0",
+        "body > div#annoying-popup-1",
+      ]);
+    });
+
+    it("should hoist equal hits on different pages as a single wildcard", function() {
+      let hitList = {}
+      let expected = {
+        "example.com": {
+          "*": [
+            "body > div#annoying-popup-0"
+          ]
+        }
+      }
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-0"
+      )
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/bar",
+        "body > div#annoying-popup-0"
+      )
+
+      ekill.updateHitList(
+        hitList,
+        "example.com",
+        "/baz",
+        "body > div#annoying-popup-0"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+      expect(hitList["example.com"]["*"]).to.have.members([
+        "body > div#annoying-popup-0"
+      ]);
+    });
+  });
 });
