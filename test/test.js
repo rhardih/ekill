@@ -28,26 +28,38 @@ describe('ekill', function() {
     it('should return an object hierarchy', function() {
       let target = document.querySelector("[data-target=geh-00-target]");
       let hierarchy = ekill.generateElementHierarchy(target);
+      let expected = {
+        el: {},
+        id: '',
+        child: {
+          child: {
+            id: '',
+            el: {},
+            localName: 'div',
+            classes: '',
+            child: {
+              el: {},
+              id: 'geh-00',
+              classes: '',
+              child: {
+                el: {},
+                id: '',
+                classes: '',
+                localName: 'p'
+              },
+              localName: 'div'
+            }
+          },
+          classes: '',
+          localName: 'div',
+          el: {},
+          id: 'fixtures'
+        },
+        classes: '',
+        localName: 'body'
+      };
 
-      expect(hierarchy).to.include({
-        localName: "body"
-      });
-      expect(hierarchy.child).to.include({
-        localName: "div",
-        id: "fixtures"
-      });
-      expect(hierarchy.child.child).to.include({
-        localName: "div",
-        id: ""
-      });
-      expect(hierarchy.child.child.child).to.include({
-        localName: "div",
-        id: "geh-00"
-      });
-      expect(hierarchy.child.child.child.child).to.include({
-        localName: "p",
-        classes: ""
-      });
+      expect(hierarchy).to.shallowDeepEqual(expected);
     });
   });
 
