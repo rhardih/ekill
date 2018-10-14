@@ -25,7 +25,6 @@ function previousSettings() {
     } else {
       let settings = item.ekillSettings;
 
-
       if (settings.keepRemoved === "true") {
         $("input#optionsOn").prop("checked", true);
         $('#hit-list').treeview('enableAll', { silent: true });
@@ -74,8 +73,7 @@ function onLoad() {
       let hostnameNode = {
         text: hostname,
         hostname: hostname,
-        nodes: [],
-        level: 0
+        nodes: []
       }
 
       let hostnameObject = hitListData[hostname];
@@ -84,15 +82,11 @@ function onLoad() {
         let pathNode = {
           text: pathname,
           hostname: hostname,
-          nodes: [
-            {
-              text: hostnameObject[pathname],
-              hostname: hostname,
-              pathname: pathname
-            }
-          ],
-          level: 1
+          nodes: [],
         }
+
+        hostnameObject[pathname].forEach(
+          selector => pathNode.nodes.push({ text: selector }) );
 
         hostnameNode.nodes.push(pathNode);
       }
