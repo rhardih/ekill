@@ -71,7 +71,13 @@ window.ekill = window.ekill || {};
    *
    * E.g. this snippet:
    *
-   * <div id="foo"><ul><li><p></p></li></ul></div>
+   * <body>
+   *   <div id="content">
+   *     <div id="foo">
+   *       <ul><li><p></p></li></ul>
+   *     </div>
+   *   </div>
+   * </body>
    *
    * Will yield the following DOMString:
    *
