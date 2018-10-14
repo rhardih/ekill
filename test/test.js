@@ -1,21 +1,21 @@
 let assert = chai.assert;
 let expect = chai.expect;
 
-describe('ekill', function() {
-  describe('#toArray', function() {
-    it('should convert NodeList to array', function() {
-      let list = document.querySelectorAll('#toArrayTest div');
+describe("ekill", function() {
+  describe("#toArray", function() {
+    it("should convert NodeList to array", function() {
+      let list = document.querySelectorAll("#toArrayTest div");
       let arr = ekill.toArray(list);
 
       expect(arr).to.be.an.instanceOf(Array);
       expect(arr).to.have.a.lengthOf(3);
       expect(arr).to.satisfy(arr => arr.every(
         node => node.nodeType === Node.ELEMENT_NODE &&
-        node.localName === 'div'));
+        node.localName === "div"));
     });
 
-    it('should convert DOMTokenList to array', function() {
-      let list = document.querySelector('#toArrayTest').classList;
+    it("should convert DOMTokenList to array", function() {
+      let list = document.querySelector("#toArrayTest").classList;
       let arr = ekill.toArray(list);
 
       expect(arr).to.be.an.instanceOf(Array);
@@ -24,39 +24,39 @@ describe('ekill', function() {
     });
   });
 
-  describe('#generateElementHierarchy', function() {
-    it('should return an object hierarchy', function() {
+  describe("#generateElementHierarchy", function() {
+    it("should return an object hierarchy", function() {
       let target = document.querySelector("[data-target=geh-00-target]");
       let hierarchy = ekill.generateElementHierarchy(target);
       let expected = {
         el: {},
-        id: '',
+        id: "",
         child: {
           child: {
-            id: '',
+            id: "",
             el: {},
-            localName: 'div',
-            classes: '',
+            localName: "div",
+            classes: "",
             child: {
               el: {},
-              id: 'geh-00',
-              classes: '',
+              id: "geh-00",
+              classes: "",
               child: {
                 el: {},
-                id: '',
-                classes: '',
-                localName: 'p'
+                id: "",
+                classes: "",
+                localName: "p"
               },
-              localName: 'div'
+              localName: "div"
             }
           },
-          classes: '',
-          localName: 'div',
+          classes: "",
+          localName: "div",
           el: {},
-          id: 'fixtures'
+          id: "fixtures"
         },
-        classes: '',
-        localName: 'body'
+        classes: "",
+        localName: "body"
       };
 
       expect(hierarchy).to.shallowDeepEqual(expected);
