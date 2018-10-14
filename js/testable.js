@@ -146,7 +146,7 @@ window.ekill = window.ekill || {};
           if (sameTagChildren.length > 1) {
             let currentObjectIndex = childrenArray.indexOf(currentObject.el);
 
-            selectorPart = `${currentObject.localName}:nth-of-type(${currentObjectIndex})`
+            selectorPart = `${currentObject.localName}:nth-of-type(${currentObjectIndex + 1})`
           } else {
             selectorPart = currentObject.localName;
           }
