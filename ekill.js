@@ -100,8 +100,7 @@
           let hierarchy = ekill.generateElementHierarchy(element);
           let selector = ekill.elementHierarchyToDOMString(hierarchy);
 
-          hitList[l.hostname] = hitList[l.hostname] || {};
-          hitList[l.hostname][l.pathname] = selector;
+          hitList = ekill.updateHitList(hitList, l.hostname, l.pathname, selector);
 
           c.storage.local.set({
             "ekillHitlist": JSON.stringify(hitList)
@@ -110,7 +109,6 @@
               console.error(c.runtime.lastError);
             }
           });
-
         }
       });
     }
