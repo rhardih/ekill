@@ -168,14 +168,13 @@ window.ekill = window.ekill || {};
   };
 
   /**
-   * Adds a hit the the hit list
+   * Modifies the hit list in place, by adding a new hit
    *
    * @param {Object} hitList - existing hit list
    * @param {String} hostname
    * @param {String} pathname
    * @param {String} selector - DOMString as returned by
    * elementHierarchyToDOMString
-   * @return {Object} A new and revised hit list
    */
   ekill.addHit = (hitList, hostname, pathname, selector) => {
     hitList[hostname] = hitList[hostname] || {};
