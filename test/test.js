@@ -221,4 +221,95 @@ describe("ekill", function() {
       ]);
     });
   });
+
+  describe("#removeHit", function() {
+    it("should remove a hit", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0",
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+
+      ekill.removeHit(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-0"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+    });
+
+    it("should remove a hit and path if there's no other hits for path", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0"
+          ],
+          "/bar": [
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+      let expected = {
+        "example.com": {
+          "/bar": [
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+
+      ekill.removeHit(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-0"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+      expect(hitList["example.com"]).to.not.have.any.keys("/foo");
+    });
+
+    it("should remove a hit, path and host if no other...", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0"
+          ]
+        },
+        "lorem.com": {
+          "/ipsum": [
+            "body > div#annoying-popup-1"
+          ]
+        }
+      }
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0"
+          ]
+        }
+      }
+
+      ekill.removeHit(
+        hitList,
+        "lorem.com",
+        "/ipsum",
+        "body > div#annoying-popup-0"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+      expect(hitList).to.not.have.any.keys("lorem.com");
+    });
+  });
 });

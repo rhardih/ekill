@@ -225,4 +225,27 @@ window.ekill = window.ekill || {};
       }
     }
   }
+
+  /**
+   * Modifies the hit list in place, by removing new hit
+   *
+   * @param {Object} hitList - existing hit list
+   * @param {String} hostname
+   * @param {String} pathname
+   * @param {String} selector - DOMString as returned by
+   * elementHierarchyToDOMString
+   */
+  ekill.removeHit = (hitList, hostname, pathname, selector) => {
+    let paths = hitList[hostname];
+    let selectorIndex = paths[pathname].indexOf(selector);
+    paths[pathname].splice(selectorIndex, 1);
+
+    // Cleanup empty paths
+    if (paths[pathname].length === 0)
+      delete paths[pathname];
+
+    // Cleanup empty hosts
+    if (Object.keys(paths).length === 0)
+      delete hitList[hostname];
+  };
 })(window.ekill)
