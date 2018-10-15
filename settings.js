@@ -117,7 +117,8 @@ function onLoad() {
         multiSelect: true
       });
 
-      $('#search-input').on('input', function() {
+      let searchInput = $('#search-input');
+      searchInput.on('input', function() {
         // minimum three characters typed before searching
         if (this.value.length < 3) return;
 
@@ -128,6 +129,10 @@ function onLoad() {
           revealResults: true,
         }]);
       });
+      searchInput.focusout(function(e) {
+        $('#hit-list').treeview('clearSearch');
+      });
+
 
       $('#hit-list').on('nodeSelected', function(event, data) {
         let queue = [data];
