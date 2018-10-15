@@ -182,7 +182,7 @@
     c.runtime.onMessage.addListener(msgHandler);
   }
 
-  // Note even though Firefox uses promises, ie supports the 'chrome' object and
+  // Note even though Firefox uses promises, it supports the 'chrome' object and
   // callbacks as well:
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Chrome_incompatibilities#Firefox_supports_both_chrome_and_browser_namespaces
   c.storage.sync.get({
