@@ -19,9 +19,17 @@
           let paths = hitList[l.hostname];
 
           if (paths !== undefined) {
-            let selectors = paths[l.pathname];
+            let selectors = [];
 
-            if (selectors !== undefined) {
+            if (paths[l.pathname] !== undefined) {
+              selectors = selectors.concat(paths[l.pathname]);
+            }
+
+            if (paths["*"] !== undefined) {
+              selectors = selectors.concat(paths["*"]);
+            }
+
+            if (selectors.length !== 0) {
               let removedCount = 0;
 
               selectors.forEach(s => {
