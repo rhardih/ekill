@@ -6,29 +6,27 @@
     //   "run_at": "document_end"
     //
     if (settings.keepRemoved === "true") {
-      c.storage.local.get({ [`ekill-replace-${window.location.hostname}`]: [] }, function(result) {
-        removeSaved(result[`ekill-replace-${window.location.hostname}`]);
-      });
-    }
-
-    let removeSaved = function(elementArray) {
-      console.warn('removing previously removed HTML elements')
-      let ekillStorage = [...elementArray];
-      for (let i = 0; i < ekillStorage.length + 1; i++) {
-        if (i >= ekillStorage.length) {
-          checkDelayed(ekillStorage);
-          break;
+      c.storage.local.get({
+        "ekillHitlist": "{}"
+      }, function(item) {
+        if (c.runtime.lastError) {
+          console.error(c.runtime.lastError);
         } else {
-          let elementDump = document.getElementsByTagName(ekillStorage[i].element); // ekillStorage[i].element's value is usually a span, div etc tec
-          for (let elem = 0; elem < elementDump.length; elem++) {
-            if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-              elementDump[elem].remove();
-              ekillStorage.splice(i, 1); // whenever we find an element that matched we want to get rid of it to make delayed checking a bit faster
-              break;
+          // Remove all elements ekill currently holds a grudge against on the
+          // current page
+
+          let hitList = JSON.parse(item.ekillHitlist);
+          let paths = hitList[l.hostname];
+
+          if (paths !== undefined) {
+            let selectors = paths[l.pathname];
+
+            if (selectors !== undefined) {
+              selectors.forEach(s => document.querySelector(s).remove());
             }
           }
         }
-      }
+      });
     }
 
     let checkDelayed = function(elementArray) {
