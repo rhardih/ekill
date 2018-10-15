@@ -22,37 +22,52 @@
             let selectors = paths[l.pathname];
 
             if (selectors !== undefined) {
-              selectors.forEach(s => document.querySelector(s).remove());
+              let removedCount = 0;
+
+              selectors.forEach(s => {
+                // We have to consider, that the hit might not be present in the
+                // page until later, so we null guard it here
+                let target = document.querySelector(s);
+                if (target !== null) {
+                  target.remove()
+                  removedCount++;
+                }
+              });
+
+              // If not all selectors had a match, maybe some of them targets
+              // elements that load onto the page later.
+              //
+              // In that case we monitor page changes
+              //
+              // (Obviously it can simply be that the page changed as well.)
+              if (removedCount !== selectors.length) {
+                console.info("ekill still holds a grudge and will lie in wait...");
+
+                let body = d.querySelector('body');
+                let config = { attributes: true, childList: true, subtree: true };
+                let observer = new MutationObserver((mutationsList, observer) => {
+                  selectors.forEach(s => {
+                    let target = document.querySelector(s);
+                    if (target !== null) {
+                      target.remove()
+                      removedCount++;
+                    }
+
+                    // When all targets have been found and killed, we can be at
+                    // peace
+                    if (removedCount === selectors.length) {
+                      observer.disconnect();
+                      console.info("ekill satisfied");
+                    }
+                  });
+                });
+
+                observer.observe(body, config);
+              }
             }
           }
         }
       });
-    }
-
-    let checkDelayed = function(elementArray) {
-      let ekillStorage = [...elementArray];
-      let intervalCount = 0;
-      let timeOutCount = 18; // times interval will run before it gives up
-      let interval = setInterval(function() {
-        if (intervalCount >= timeOutCount) {
-          clearInterval(interval);
-        } else if (ekillStorage.length === 0) { // already found & removed all elements
-          clearInterval(interval);
-        } else {
-          for (let i = 0; i < ekillStorage.length; i++) {
-            let elementDump = document.getElementsByTagName(ekillStorage[i].element);
-            for (let elem = 0; elem < elementDump.length; elem++) {
-              if (elementDump[elem].outerHTML === ekillStorage[i].outerHTML) {
-                elementDump[elem].remove();
-                ekillStorage.splice(i, 1);
-                break;
-              }
-            }
-          }
-          intervalCount++;
-        }
-
-      }, 1000);
     }
 
     let active = false;
