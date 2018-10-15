@@ -125,7 +125,7 @@ describe("ekill", function() {
     });
   });
 
-  describe("#updateHitList", function() {
+  describe("#addHit", function() {
     it("should add new hits", function() {
       let hitList = {};
       let expected = {
@@ -136,7 +136,7 @@ describe("ekill", function() {
         }
       }
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/foo",
@@ -163,14 +163,14 @@ describe("ekill", function() {
         }
       }
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/foo",
         "body > div#annoying-popup-1"
       )
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/foo",
@@ -194,21 +194,21 @@ describe("ekill", function() {
         }
       }
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/foo",
         "body > div#annoying-popup-0"
       )
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/bar",
         "body > div#annoying-popup-0"
       )
 
-      ekill.updateHitList(
+      ekill.addHit(
         hitList,
         "example.com",
         "/baz",
