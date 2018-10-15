@@ -100,7 +100,7 @@
           let hierarchy = ekill.generateElementHierarchy(element);
           let selector = ekill.elementHierarchyToDOMString(hierarchy);
 
-          hitList = ekill.updateHitList(hitList, l.hostname, l.pathname, selector);
+          ekill.updateHitList(hitList, l.hostname, l.pathname, selector);
 
           c.storage.local.set({
             "ekillHitlist": JSON.stringify(hitList)

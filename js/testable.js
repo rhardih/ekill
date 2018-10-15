@@ -225,7 +225,5 @@ window.ekill = window.ekill || {};
         }
       }
     }
-
-    return hitList;
   }
 })(window.ekill)
