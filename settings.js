@@ -72,23 +72,28 @@ function onLoad() {
     for (let hostname in hitListData) {
       let hostnameNode = {
         text: hostname,
-        hostname: hostname,
+        selectable: false,
         nodes: []
       }
 
       let hostnameObject = hitListData[hostname];
 
       for (let pathname in hostnameObject) {
-        let pathNode = {
+        let pathnameNode = {
           text: pathname,
-          hostname: hostname,
-          nodes: [],
+          selectable: false,
+          nodes: []
         }
 
-        hostnameObject[pathname].forEach(
-          selector => pathNode.nodes.push({ text: selector }) );
+        let pathnameObject = hostnameObject[pathname];
 
-        hostnameNode.nodes.push(pathNode);
+        pathnameObject.forEach(selector => pathnameNode.nodes.push({
+          text: selector,
+          hostname: hostname,
+          pathname: pathname
+        }));
+
+        hostnameNode.nodes.push(pathnameNode);
       }
 
       d.push(hostnameNode);
@@ -184,24 +189,13 @@ function onLoad() {
       });
 
       $('button#remove-button').click(function() {
-        //if (window.confirm("Remove selected Hit List targets?")) {
-          var selected = $('#hit-list').treeview('getSelected');
-
-          selected.forEach(s => {
-            if (hitList[s.hostname]) {
-              console.log("foo", hitList[s.hostname], s.pathname);
-              if (hitList[s.hostname][s.pathname]) {
-                console.log("deleting", hitList[s.hostname][s.pathname]);
-                delete hitList[s.hostname][s.pathname];
-              }
-              //delete hitList[s.hostname];
-            }
+        if (window.confirm("Remove selected Hit List targets?")) {
+          $('#hit-list').treeview('getSelected').forEach(s => {
+            ekill.removeHit(hitList, s.hostname, s.pathname, s.text);
 
             let settings = {
               ekillHitlist: JSON.stringify(hitList)
-            }
-
-            console.log(settings);
+            };
 
             chrome.storage.local.set(settings, function() {
               if (chrome.runtime.lastError) {
@@ -211,14 +205,13 @@ function onLoad() {
               }
             });
           });
-        //}
+        }
       });
     }
 
     previousSettings();
     printAllPages();
   });
-
 }
 
 document.getElementById('save').addEventListener('click', saveOptions);
