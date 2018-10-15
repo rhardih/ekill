@@ -175,6 +175,8 @@ function onLoad() {
 
     previousSettings();
   });
+
+  $("#version").text(chrome.runtime.getManifest().version);
 }
 
 document.addEventListener('DOMContentLoaded', onLoad);
