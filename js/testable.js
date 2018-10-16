@@ -218,7 +218,6 @@ window.ekill = window.ekill || {};
       // Clean up potentially empty paths
       for (let p in paths) {
         if (paths.hasOwnProperty(p)) {
-          // Remove from all other paths, since it's now a wildcard match
           if (paths[p].length === 0)
             delete paths[p];
         }
