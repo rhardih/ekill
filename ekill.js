@@ -125,6 +125,8 @@
 
       if (settings.keepRemoved === "true") {
         saveRemovedElement(e.target, () => e.target.remove());
+      }else{
+        e.target.remove();
       }
       e.preventDefault();
       e.stopPropagation();
