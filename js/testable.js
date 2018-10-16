@@ -178,49 +178,91 @@ window.ekill = window.ekill || {};
    */
   ekill.addHit = (hitList, hostname, pathname, selector) => {
     hitList[hostname] = hitList[hostname] || {};
-
     let paths = hitList[hostname];
-    paths["*"] = paths["*"] || [];
-    let wildcardAlready = paths["*"].indexOf(selector) !== -1;
 
-    if (!wildcardAlready) {
-      paths[pathname] = paths[pathname] || [];
+    // 1. Check if this selector is a parent of a wildcard
+    //
+    // E.g. of the following two distinct selectors:
+    //
+    //  A: lorem > ipsum > dolor
+    //  B: lorem > ipsum
+    //
+    // B points to a parent of A, so we only need to store B.
+    let hostHasWildcards = paths.hasOwnProperty("*");
+    if (hostHasWildcards) {
+      let wildcards = paths["*"];
 
-      // If the same element has been killed under the same domain but for
-      // different pathnames, hoist it to be a wildcard match
-      let selectors = paths[pathname];
-      let addToWildcard = false;
-      for (let p in paths) {
-        if (paths.hasOwnProperty(p)) {
-          if (p === "*") continue;
-          if (p === pathname) continue;
+      for (let i = 0; i < wildcards.length; ++i) {
+        let s = wildcards[i];
 
-          let selectorIndex = paths[p].indexOf(selector);
-
-          if (selectorIndex !== -1) {
-            addToWildcard = true;
-
-            // Remove from all other paths, since it's now a wildcard match
-            paths[p].splice(selectorIndex, 1);
+        // Note that startsWith returns true for equality and not just substring
+        // match. In both cases nothing further needs to be done though, since
+        // the selector is either pre-existing or being updated.
+        if (s.startsWith(selector)) {
+          if(s.length > selector.length) {
+            wildcards[i] = selector;
           }
+          return;
         }
       }
+    }
 
-      if (addToWildcard) {
-        paths["*"].push(selector);
-      } else {
-        // Only append selector if it's not already there
-        if (selectors.indexOf(selector) === -1)
-          selectors.push(selector);
+    // 2. Do the same as in 1. but for path specific selectors
+    let hostHasPath = paths.hasOwnProperty(pathname);
+    if (hostHasPath) {
+      let selectors = paths[pathname];
 
-      }
+      for (let i = 0; i < selectors.length; ++i) {
+        let s = selectors[i];
 
-      // Clean up potentially empty paths
-      for (let p in paths) {
-        if (paths.hasOwnProperty(p)) {
-          if (paths[p].length === 0)
-            delete paths[p];
+        if (s.startsWith(selector)) {
+          if (s.length > selector.length) {
+            selectors[i] = selector;
+          }
+          return;
         }
+      }
+    }
+
+    // 3. Selector is neither for a parent, nor pre-existing so we go ahead and
+    // add it
+    paths[pathname] = paths[pathname] || [];
+
+    // If the same element has been killed under the same domain but for
+    // different pathnames, hoist it to be a wildcard match
+    let selectors = paths[pathname];
+    let addToWildcard = false;
+    for (let p in paths) {
+      if (p === "*") continue;
+      if (p === pathname) continue;
+
+      if (paths.hasOwnProperty(p)) {
+        let selectorIndex = paths[p].indexOf(selector);
+        if (selectorIndex !== -1) {
+          addToWildcard = true;
+
+          // Remove from all other paths, since it's now a wildcard match
+          paths[p].splice(selectorIndex, 1);
+        }
+      }
+    }
+
+    if (addToWildcard) {
+      if (!hostHasWildcards)
+        paths["*"] = [];
+      paths["*"].push(selector);
+    } else {
+      // Only append selector if it's not already there
+      if (selectors.indexOf(selector) === -1)
+        selectors.push(selector);
+
+    }
+
+    // Clean up potentially empty paths
+    for (let p in paths) {
+      if (paths.hasOwnProperty(p)) {
+        if (paths[p].length === 0)
+          delete paths[p];
       }
     }
   }

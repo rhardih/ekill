@@ -220,6 +220,33 @@ describe("ekill", function() {
         "body > div#annoying-popup-0"
       ]);
     });
+
+    it("should collapse selectors if matching a parent of previous killed element", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0 > div.popup-content"
+          ]
+        }
+      }
+
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "body > div#annoying-popup-0"
+          ]
+        }
+      }
+
+      ekill.addHit(
+        hitList,
+        "example.com",
+        "/foo",
+        "body > div#annoying-popup-0"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+    });
   });
 
   describe("#removeHit", function() {
