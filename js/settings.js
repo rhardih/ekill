@@ -114,10 +114,10 @@
           }
         });
 
-        $('input[type=radio][name=grudge]').change(_ => {
+        $('input[type=radio][name=grudge]').change(e => {
           let holdsGrudge;
 
-          if (this.value === "on") {
+          if (e.target.value === "on") {
             holdsGrudge = "true";
 
             $('#hit-list').treeview('enableAll', { silent: true });
