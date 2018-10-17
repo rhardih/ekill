@@ -1,10 +1,10 @@
-(function(c, d, l) {
-  let getSettings = function(callback) {
+((c, d, l) => {
+  let getSettings = callback => {
     c.storage.sync.get({
       "ekillSettings": {
         holdsGrudge: "false"
       }
-    }, function(item) {
+    }, item => {
       if (c.runtime.lastError) {
         console.error(browser.runtime.lastError);
       } else {
@@ -13,7 +13,7 @@
     });
   }
 
-  let onLoad = function() {
+  let onLoad = _ => {
     let convertToTreeData = hitListData => {
       var d = [];
 
@@ -52,7 +52,7 @@
 
     c.storage.local.get({
       ekillHitlist: "{}"
-    }, function(item) {
+    }, item => {
       if (c.runtime.lastError) {
         console.error(c.runtime.lastError);
       } else {
@@ -66,7 +66,7 @@
         });
 
         let searchInput = $('#search-input');
-        searchInput.on('input', function() {
+        searchInput.on('input', _ => {
           // minimum three characters typed before searching
           if (this.value.length < 3) return;
 
@@ -77,12 +77,12 @@
             revealResults: true,
           }]);
         });
-        searchInput.focusout(function(e) {
+        searchInput.focusout(e => {
           $('#hit-list').treeview('clearSearch');
         });
 
 
-        $('#hit-list').on('nodeSelected', function(event, data) {
+        $('#hit-list').on('nodeSelected', (event, data) => {
           let queue = [data];
 
           $('button#remove-button').prop("disabled", false);
@@ -97,7 +97,7 @@
           }
         });
 
-        $('#hit-list').on('nodeUnselected', function(event, data) {
+        $('#hit-list').on('nodeUnselected', (event, data) => {
           let queue = [data];
 
           // unselect every node in sub-tree
@@ -114,7 +114,7 @@
           }
         });
 
-        $('input[type=radio][name=grudge]').change(function() {
+        $('input[type=radio][name=grudge]').change(_ => {
           let holdsGrudge;
 
           if (this.value === "on") {
@@ -134,14 +134,14 @@
             }
           }
 
-          c.storage.sync.set(settings, function() {
+          c.storage.sync.set(settings, _ => {
             if (c.runtime.lastError) {
               console.error(browser.runtime.lastError);
             }
           });
         });
 
-        $('button#remove-button').click(function() {
+        $('button#remove-button').click(_ => {
           if (window.confirm("Remove selected Hit List targets?")) {
             $('#hit-list').treeview('getSelected').forEach(s => {
               ekill.removeHit(hitList, s.hostname, s.pathname, s.text);
@@ -150,7 +150,7 @@
                 ekillHitlist: JSON.stringify(hitList)
               };
 
-              c.storage.local.set(settings, function() {
+              c.storage.local.set(settings, _ => {
                 if (c.runtime.lastError) {
                   console.error(browser.runtime.lastError);
                 } else {
