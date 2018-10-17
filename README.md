@@ -1,5 +1,4 @@
-ekill
-=============
+# ekill
 
 It's like [**xkill**](https://en.wikipedia.org/wiki/Xkill), but for annoying web pages instead.
 
@@ -12,21 +11,31 @@ Chrome and Firefox plugin for quickly getting rid of elements on a web page.
 
 ![Example](https://raw.githubusercontent.com/rhardih/ekill/master/example.gif)
 
-## options
-- You can make ekill remember your removed elemts by right clicking on the icon and going to 'options'
-- Here you can also reset the pages default settings
-
 ## Keyboard shortcut
 
 By default **ekill** is toggled with *ctrl+k*, but this can be modified at will.
 
 Go to [chrome://extensions/shortcuts](chrome://extensions/shortcuts), find the item labeled "ekill" and set it to whatever is most convenient.
 
-# License
+
+## Options
+
+### Grudge (Experimental)
+
+Turning this feature on, will let ekill hold a grudge against offending
+elements.
+
+By keeping a record of killed of elements on a per page basis, ekill will try
+it's best to remove these elements on subsequent visits to the same page.
+
+A rudimentary ui for toggling *Grudge*, as well as  listing and editing the hit
+list, is included in the options page.
+
+## License
 
 MIT: http://rhardih.mit-license.org
 
-# Changelog
+## Changelog
 
 **1.5**
 
