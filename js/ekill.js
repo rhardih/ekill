@@ -1,5 +1,5 @@
-(function(c, d, l, ekill) {
-  let contentAction = function(settings) {
+((c, d, l, ekill) => {
+  let contentAction = settings => {
     // No need to wait for a 'DOMContentLoaded' event since the manifest
     // specifies:
     //
@@ -8,7 +8,7 @@
     if (settings.holdsGrudge === "true") {
       c.storage.local.get({
         "ekillHitlist": "{}"
-      }, function(item) {
+      }, item => {
         if (c.runtime.lastError) {
           console.error(c.runtime.lastError);
         } else {
@@ -85,19 +85,19 @@
       d.querySelectorAll('[role=button]'),
     ];
 
-    let overHandler = function(e) {
+    let overHandler = e => {
       e.target.classList.add("ekill");
       e.stopPropagation();
     };
-    let outHandler = function(e) {
+    let outHandler = e => {
       e.target.classList.remove("ekill");
       e.stopPropagation();
     };
 
-    let saveRemovedElement = function(element, callback) {
+    let saveRemovedElement = (element, callback) => {
       c.storage.local.get({
         "ekillHitlist": "{}"
-      }, function(item) {
+      }, item => {
         if (c.runtime.lastError) {
           console.error(c.runtime.lastError);
         } else {
@@ -109,7 +109,7 @@
 
           c.storage.local.set({
             "ekillHitlist": JSON.stringify(hitList)
-          }, function() {
+          }, _ => {
             if (c.runtime.lastError) {
               console.error(c.runtime.lastError);
             } else {
@@ -120,7 +120,7 @@
       });
     }
 
-    let clickHandler = function(e) {
+    let clickHandler = e => {
       disable();
 
       if (settings.holdsGrudge === "true") {
@@ -133,17 +133,17 @@
       e.stopPropagation();
     };
 
-    let keyHandler = function(e) {
+    let keyHandler = e => {
       if (e.key === "Escape") {
         disable();
       }
     }
 
-    let enable = function() {
+    let enable = _ => {
       active = true;
 
       // override click handlers on any clickable element
-      clickable.forEach(function(c) {
+      clickable.forEach(c => {
         for (var i = 0; i < c.length; i++) {
           c[i].onclickBackup = c[i].onclick;
           c[i].addEventListener("click", clickHandler);
@@ -157,10 +157,10 @@
       d.addEventListener("keydown", keyHandler, true);
     };
 
-    let disable = function() {
+    let disable = _ => {
       active = false;
 
-      clickable.forEach(function(c) {
+      clickable.forEach(c => {
         for (var i = 0; i < c.length; i++) {
           c[i].removeEventListener("click", clickHandler);
           c[i].addEventListener("click", c[i].onclickBackup);
@@ -182,7 +182,7 @@
       d.removeEventListener("keydown", keyHandler, true);
     };
 
-    let msgHandler = function(message, callback) {
+    let msgHandler = (message, callback) => {
       if (active) {
         disable();
       } else {
@@ -200,7 +200,7 @@
     "ekillSettings": {
       holdsGrudge: "false"
     }
-  }, function(item) {
+  }, item => {
     if (c.runtime.lastError) {
       console.error(c.runtime.lastError);
     } else {
