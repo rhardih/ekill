@@ -43,7 +43,7 @@
   "content_scripts": [{
     "matches": ["<all_urls>"],
     "js": ["js/testable.js", "ekill.js"],
-    "css": ["ekill.css"],
+    "css": ["css/ekill.css"],
     "run_at": "document_end"
   }],
   "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com; object-src 'self'",
