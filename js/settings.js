@@ -1,5 +1,5 @@
 (function(c, d, l) {
-  function previousSettings() {
+  function getSettings(callback) {
     c.storage.sync.get({
       "ekillSettings": {
         holdsGrudge: "false"
@@ -8,19 +8,7 @@
       if (c.runtime.lastError) {
         console.error(browser.runtime.lastError);
       } else {
-        let settings = item.ekillSettings;
-
-        if (settings.holdsGrudge === "true") {
-          $("input#optionsOn").prop("checked", true);
-          $('#hit-list').treeview('enableAll', { silent: true });
-          $("input#optionsOff").prop("checked", false);
-          $("#search-input").prop("disabled", false);
-        } else {
-          $("input#optionsOn").prop("checked", false);
-          $('#hit-list').treeview('disableAll', { silent: true });
-          $("input#optionsOff").prop("checked", true);
-          $("#search-input").prop("disabled", true);
-        }
+        callback(item.ekillSettings);
       }
     });
   }
@@ -174,7 +162,19 @@
         });
       }
 
-      previousSettings();
+      getSettings(settings => {
+        if (settings.holdsGrudge === "true") {
+          $("input#optionsOn").prop("checked", true);
+          $('#hit-list').treeview('enableAll', { silent: true });
+          $("input#optionsOff").prop("checked", false);
+          $("#search-input").prop("disabled", false);
+        } else {
+          $("input#optionsOn").prop("checked", false);
+          $('#hit-list').treeview('disableAll', { silent: true });
+          $("input#optionsOff").prop("checked", true);
+          $("#search-input").prop("disabled", true);
+        }
+      });
     });
 
     $("#version").text(c.runtime.getManifest().version);
