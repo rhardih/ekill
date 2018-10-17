@@ -1,5 +1,5 @@
 (function(c, d, l) {
-  function getSettings(callback) {
+  let getSettings = function(callback) {
     c.storage.sync.get({
       "ekillSettings": {
         holdsGrudge: "false"
@@ -13,7 +13,7 @@
     });
   }
 
-  function onLoad() {
+  let onLoad = function() {
     let convertToTreeData = hitListData => {
       var d = [];
 
