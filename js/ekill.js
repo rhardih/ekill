@@ -5,7 +5,7 @@
     //
     //   "run_at": "document_end"
     //
-    if (settings.keepRemoved === "true") {
+    if (settings.holdsGrudge === "true") {
       c.storage.local.get({
         "ekillHitlist": "{}"
       }, function(item) {
@@ -123,7 +123,7 @@
     let clickHandler = function(e) {
       disable();
 
-      if (settings.keepRemoved === "true") {
+      if (settings.holdsGrudge === "true") {
         saveRemovedElement(e.target, () => e.target.remove());
       } else {
         e.target.remove();
@@ -198,7 +198,7 @@
   // https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/Chrome_incompatibilities#Firefox_supports_both_chrome_and_browser_namespaces
   c.storage.sync.get({
     "ekillSettings": {
-      keepRemoved: "false"
+      holdsGrudge: "false"
     }
   }, function(item) {
     if (c.runtime.lastError) {

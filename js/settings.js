@@ -1,7 +1,7 @@
 function previousSettings() {
   chrome.storage.sync.get({
     "ekillSettings": {
-      keepRemoved: "false"
+      holdsGrudge: "false"
     }
   }, function(item) {
     if (chrome.runtime.lastError) {
@@ -9,7 +9,7 @@ function previousSettings() {
     } else {
       let settings = item.ekillSettings;
 
-      if (settings.keepRemoved === "true") {
+      if (settings.holdsGrudge === "true") {
         $("input#optionsOn").prop("checked", true);
         $('#hit-list').treeview('enableAll', { silent: true });
         $("input#optionsOff").prop("checked", false);
@@ -126,22 +126,22 @@ function onLoad() {
       });
 
       $('input[type=radio][name=grudge]').change(function() {
-        let keepRemoved;
+        let holdsGrudge;
 
         if (this.value === "on") {
-          keepRemoved = "true";
+          holdsGrudge = "true";
 
           $('#hit-list').treeview('enableAll', { silent: true });
           $("#search-input").prop("disabled", false);
         } else {
-          keepRemoved = "false";
+          holdsGrudge = "false";
           $('#hit-list').treeview('disableAll', { silent: true });
           $("#search-input").prop("disabled", true);
         }
 
         let settings = {
           ekillSettings: {
-            keepRemoved: keepRemoved
+            holdsGrudge: holdsGrudge
           }
         }
 
