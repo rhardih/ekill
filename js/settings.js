@@ -1,4 +1,4 @@
-((c, d, l) => {
+((c, d, l, ekill) => {
   let getSettings = callback => {
     c.storage.sync.get({
       "ekillSettings": {
@@ -181,4 +181,4 @@
   }
 
   d.addEventListener('DOMContentLoaded', onLoad);
-})(chrome, document, location);
+})(chrome, document, location, ekill);
