@@ -1,4 +1,5 @@
 #logo {
-  margin-top: 20px; /* Same as h1 */
+  margin: 20px auto; /* Same as h1 */
   width: 100%;
+  max-width: 200px;
 }
