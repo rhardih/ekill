@@ -37,12 +37,12 @@
     "unlimitedStorage"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
-    "js": ["js/testable.js", "ekill.js"],
+    "js": ["js/testable.js", "js/ekill.js"],
     "css": ["css/ekill.css"],
     "run_at": "document_end"
   }],
