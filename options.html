@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <title>ekill</title>
+    <link rel="stylesheet" href="css/options.css">
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" href="css/bootstrap-treeview.min.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-2">
+          <img id="logo" class="img-responsive" src='./skull-and-bones.svg' alt="404" />
+          <h3 class="text-center">ekill</h3>
+          <h4 id="version" class="text-center"></h4>
+        </div>
+        <div class="col-md-8">
+          <h1>Settings</h1>
+          <p class="mx-auto">
+          <h2 class="text-warning">Experimental</h2>
+
+          <h3>Grudge</h3>
+          <div class="row">
+            <div class="col-md-12">
+              <p>Turning this setting on lets ekill hold a grudge against any
+              element you kill.</p>
+              <p>On subsequent visits to the same page, ekill will
+              spot repeat offenders and carry out sweet vengeance.</p>
+              <p><strong>FYI:</strong> This setting is strictly local. The
+              <em>Hit List</em> is not shared across installations of ekill.</p>
+
+              <div class="form-group text-right">
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="grudge" id="optionsOn" value="on" />
+                    On
+                  </label>
+                </div>
+                <div class="radio-inline">
+                  <label>
+                    <input type="radio" name="grudge" id="optionsOff"
+                    value="off" checked/>
+                    Off
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <h4>Hit List</h4>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="form-group">
+                <input id="search-input" type="search" class="form-control" placeholder="Search...">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div id="hit-list"></div>
+              <div class="form-group text-right">
+              <button id="remove-button" type="button" class="btn btn-danger
+                text-right" disabled>Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+
+      <script type="text/javascript" src="js/jquery.slim.min.js"></script>
+      <script type="text/javascript" src="js/bootstrap-treeview.min.js"></script>
+      <script type="text/javascript" src="js/testable.js"></script>
+      <script type="text/javascript" src="js/options.js"></script>
+    </div>
+  </body>
+</html>
