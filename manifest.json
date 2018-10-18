@@ -54,5 +54,13 @@
   },
   "web_accessible_resources": [
     "changelog.html"
-  ]
+  ],
+  "commands": {
+    "_execute_browser_action": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "MacCtrl+K"
+      }
+    }
+  }
 }
