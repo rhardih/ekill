@@ -27,7 +27,7 @@
   },
   "applications": {
     "gecko": {
-      "id": "git@ekill.com",
+      "id": "{e4326fc5-909b-47e0-a0af-dd3ec180dea5}",
       "strict_min_version": "42.0"
     }
   },
