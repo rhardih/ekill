@@ -1,0 +1,79 @@
+<head>
+  <meta charset="utf-8">
+  <title>Mocha Tests</title>
+  <link href="https://unpkg.com/mocha@5.2.0/mocha.css" rel="stylesheet" />
+</head>
+<body>
+  <div id="mocha"></div>
+
+  <script src="https://unpkg.com/chai/chai.js"></script>
+  <script src="https://unpkg.com/mocha@5.2.0/mocha.js"></script>
+  <script src="https://unpkg.com/chai-shallow-deep-equal@1.4.6/chai-shallow-deep-equal.js"></script>
+
+  <div id="fixtures">
+    <div id="toArrayTest" class="lorem ipsum dolor">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+
+    <div data-test-name="generateElementHierarchyTest">
+      <div id="geh-00">
+        <p data-target="geh-00-target"></p>
+      </div>
+    </div>
+
+    <div data-test-name="elementHierarchyToDOMStringTest">
+      <div id="ehtd-01-not-unique"></div>
+      <div class="ehtd-03-not-unique"></div>
+
+      <div id="ehtd-00">
+        <!-- unique id in document -->
+        <div></div>
+        <div></div>
+        <div data-target="ehtd-00-target"></div>
+      </div>
+      <div id="ehtd-01" data-test="ehtd-01">
+        <!-- unique id in parent -->
+        <div></div>
+        <div></div>
+        <div id="ehtd-01-not-unique" data-target="ehtd-01-target"></div>
+      </div>
+      <div id="ehtd-02">
+        <!-- unique class in document -->
+        <div></div>
+        <div></div>
+        <div class="ehtd-02" data-target="ehtd-02-target"></div>
+      </div>
+      <div id="ehtd-03">
+        <!-- unique class in parent -->
+        <div></div>
+        <div></div>
+        <div class="ehtd-03-not-unique" data-target="ehtd-03-target"></div>
+      </div>
+      <div id="ehtd-04">
+        <!-- nth-of-type needed -->
+        <div></div>
+        <div></div>
+        <div data-target="ehtd-04-target"></div>
+      </div>
+      <div id="ehtd-05">
+        <!-- nth-of-type not needed-->
+        <span></span>
+        <p></p>
+        <div data-target="ehtd-05-target"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>mocha.setup('bdd')</script>
+
+  <script src="/js/testable.js"></script>
+  <script src="/test/test.js"></script>
+
+  <script type="module">
+    mocha.checkLeaks();
+    mocha.run();
+  </script>
+</body>
+</html>

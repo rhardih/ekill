@@ -19,31 +19,37 @@
       "size": 48
     }]
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true,
+    "browser_style": false,
+    "chrome_style": false
+  },
+  "applications": {
+    "gecko": {
+      "id": "git@ekill.com",
+      "strict_min_version": "42.0"
+    }
+  },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage",
+    "unlimitedStorage"
   ],
   "background": {
-    "scripts": ["background.js"],
+    "scripts": ["js/background.js"],
     "persistent": false
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["ekill.js"],
-      "css": ["ekill.css"]
-    }
-  ],
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["js/testable.js", "js/ekill.js"],
+    "css": ["css/ekill.css"],
+    "run_at": "document_end"
+  }],
+  "content_security_policy": "script-src 'self' https://cdnjs.cloudflare.com; object-src 'self'",
   "icons": {
     "16": "skull-and-bones-16.png",
     "48": "skull-and-bones-48.png",
     "128": "skull-and-bones-128.png"
-  },
-  "commands": {
-    "_execute_browser_action": {
-      "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "MacCtrl+K"
-      }
-    }
   }
 }
