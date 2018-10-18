@@ -123,6 +123,17 @@ describe("ekill", function() {
       expect(ds).to.equal("#ehtd-05 > div");
       expect(selected).to.equal(target);
     });
+
+    it("should use nth-of-type correctly", function() {
+      let target = document.querySelector("[data-target=ehtd-06-target]");
+      let hierarchy = ekill.generateElementHierarchy(target);
+      let ds = ekill.elementHierarchyToDOMString(hierarchy);
+
+      let selected = document.querySelector(ds);
+
+      expect(ds).to.equal("#ehtd-06 > p:nth-of-type(1)");
+      expect(selected).to.equal(target);
+    });
   });
 
   describe("#addHit", function() {
