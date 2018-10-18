@@ -6,7 +6,7 @@
       }
     }, item => {
       if (c.runtime.lastError) {
-        console.error(browser.runtime.lastError);
+        console.error(c.runtime.lastError);
       } else {
         callback(item.ekillSettings);
       }
@@ -136,7 +136,7 @@
 
           c.storage.sync.set(settings, _ => {
             if (c.runtime.lastError) {
-              console.error(browser.runtime.lastError);
+              console.error(c.runtime.lastError);
             }
           });
         });
@@ -152,7 +152,7 @@
 
               c.storage.local.set(settings, _ => {
                 if (c.runtime.lastError) {
-                  console.error(browser.runtime.lastError);
+                  console.error(c.runtime.lastError);
                 } else {
                   l.reload();
                 }
