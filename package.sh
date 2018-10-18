@@ -9,10 +9,11 @@ zip -d ekill.zip .gitignore
 zip -d ekill.zip README.md
 zip -d ekill.zip package.sh
 zip -d ekill.zip example.gif
+zip -d ekill.zip test/*
 
 popd
 
-if [ ! -f ekill.zip ];
+if [ -f ekill.zip ];
 then
   rm ekill.zip
 fi
