@@ -1,5 +1,11 @@
+/* used in both options.html and changelog.html */
+
 #logo {
   margin: 20px auto; /* Same as h1 */
   width: 100%;
   max-width: 200px;
+}
+
+.badge {
+  vertical-align: super;
 }
