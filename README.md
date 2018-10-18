@@ -37,6 +37,12 @@ MIT: http://rhardih.mit-license.org
 
 ## Changelog
 
+**1.6**
+
+- Adds the Grudge feature
+- Adds options page to control Grudge
+- Adds changelog notifications on version upgrades
+
 **1.5**
 
 - Adds light icons for Firefox dark theme.
