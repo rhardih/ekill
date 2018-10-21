@@ -1,5 +1,7 @@
 ((c, d, l, ekill) => {
   let contentAction = settings => {
+    let killCount = 0;
+
     // No need to wait for a 'DOMContentLoaded' event since the manifest
     // specifies:
     //
@@ -30,7 +32,7 @@
             }
 
             if (selectors.length !== 0) {
-              let removedCount = 0;
+              killCount = 0;
 
               selectors.forEach(s => {
                 // We have to consider, that the hit might not be present in the
@@ -38,9 +40,11 @@
                 let target = document.querySelector(s);
                 if (target !== null) {
                   target.remove()
-                  removedCount++;
+                  killCount++;
                 }
               });
+
+              c.runtime.sendMessage('killCountUpdated');
 
               // If not all selectors had a match, maybe some of them targets
               // elements that load onto the page later.
@@ -48,7 +52,7 @@
               // In that case we monitor page changes
               //
               // (Obviously it can simply be that the page changed as well.)
-              if (removedCount !== selectors.length) {
+              if (killCount !== selectors.length) {
                 console.info("ekill still holds a grudge and will lie in wait...");
 
                 let body = d.querySelector('body');
@@ -58,16 +62,18 @@
                     let target = document.querySelector(s);
                     if (target !== null) {
                       target.remove()
-                      removedCount++;
+                      killCount++;
                     }
 
                     // When all targets have been found and killed, we can be at
                     // peace
-                    if (removedCount === selectors.length) {
+                    if (killCount === selectors.length) {
                       observer.disconnect();
                       console.info("ekill satisfied");
                     }
                   });
+
+                  c.runtime.sendMessage('killCountUpdated');
                 });
 
                 observer.observe(body, config);
@@ -76,6 +82,13 @@
           }
         }
       });
+
+      let msgHandler = (message, sender, sendResponse) => {
+        if (message === "queryKillCount")
+          sendResponse(killCount);
+      };
+
+      c.runtime.onMessage.addListener(msgHandler);
     }
 
     let active = false;
@@ -182,11 +195,13 @@
       d.removeEventListener("keydown", keyHandler, true);
     };
 
-    let msgHandler = (message, callback) => {
-      if (active) {
-        disable();
-      } else {
-        enable();
+    let msgHandler = (message, sender, sendResponse) => {
+      if (message === "toggle") {
+        if (active) {
+          disable();
+        } else {
+          enable();
+        }
       }
     };
 

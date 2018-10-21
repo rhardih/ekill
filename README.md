@@ -37,6 +37,10 @@ MIT: http://rhardih.mit-license.org
 
 ## Changelog
 
+**1.7**
+
+- Adds a kill count badge to the extension icon.
+
 **1.6**
 
 - Adds the Grudge feature
