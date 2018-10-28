@@ -66,12 +66,14 @@
         });
 
         let searchInput = $('#search-input');
-        searchInput.on('input', _ => {
-          // minimum three characters typed before searching
-          if (this.value.length < 3) return;
+        searchInput.on('input', e => {
+          let value = e.target.value;
+
+          // Min three characters typed before searching
+          if (value.length < 3) return;
 
           $('#hit-list').treeview('clearSearch');
-          $('#hit-list').treeview('search', [ this.value, {
+          $('#hit-list').treeview('search', [ value, {
             ignoreCase: true,
             exactMatch: false,
             revealResults: true,
