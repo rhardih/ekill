@@ -54,18 +54,13 @@
           updateKillCounter(activeInfo.tabId);
         });
 
-        c.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-          if (!tab.active) return;
-
-          if (changeInfo.status == "loading") {
+        let msgHandler = (message, sender, sendResponse) => {
+          if (message === "killCountUpdated") {
+            updateKillCounter(sender.tab.id);
+          } else if (message === "pageLoading") {
             // Clear badge on page reloads
             c.browserAction.setBadgeText({text: ""});
           }
-        });
-
-        let msgHandler = (message, sender, sendResponse) => {
-          if (message === "killCountUpdated")
-            updateKillCounter(sender.tab.id);
         };
 
         c.runtime.onMessage.addListener(msgHandler);
