@@ -258,6 +258,33 @@ describe("ekill", function() {
 
       expect(hitList).to.shallowDeepEqual(expected);
     });
+
+    it("should not collapse selectors if matching isn't a full parent", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "div > p:nth-of-type(1)"
+          ]
+        }
+      }
+
+      let expected = {
+        "example.com": {
+          "/foo": [
+            "div > p:nth-of-type(1)"
+          ]
+        }
+      }
+
+      ekill.addHit(
+        hitList,
+        "example.com",
+        "/foo",
+        "div > p"
+      )
+
+      expect(hitList).to.shallowDeepEqual(expected);
+    });
   });
 
   describe("#removeHit", function() {
