@@ -180,6 +180,15 @@ window.ekill = window.ekill || {};
     hitList[hostname] = hitList[hostname] || {};
     let paths = hitList[hostname];
 
+    /**
+     * Checks if a DOMString might be a pseudo specific version of another
+     *
+     * @param {String} s0 - DOMString
+     * @param {String} s1 - DOMString
+     * @returns {Bool}
+     */
+    let pseudo = (s0, s1) => s0.length > s1.length && s0[s1.length] === ":";
+
     // 1. Check if this selector is a parent of a wildcard
     //
     // E.g. of the following two distinct selectors:
@@ -199,7 +208,7 @@ window.ekill = window.ekill || {};
         // match. In both cases nothing further needs to be done though, since
         // the selector is either pre-existing or being updated.
         if (s.startsWith(selector)) {
-          if(s.length > selector.length) {
+          if(!pseudo(s, selector)) {
             wildcards[i] = selector;
           }
           return;
@@ -216,7 +225,7 @@ window.ekill = window.ekill || {};
         let s = selectors[i];
 
         if (s.startsWith(selector)) {
-          if (s.length > selector.length) {
+          if(!pseudo(s, selector)) {
             selectors[i] = selector;
           }
           return;
