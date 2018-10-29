@@ -1,4 +1,6 @@
 ((c, d, l, ekill) => {
+  c.runtime.sendMessage('pageLoading');
+
   let contentAction = settings => {
     let killCount = 0;
 
