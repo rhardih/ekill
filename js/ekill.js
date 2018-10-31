@@ -11,7 +11,8 @@
     //
     if (settings.holdsGrudge === "true") {
       c.storage.local.get({
-        "ekillHitlist": "{}"
+        "ekillHitlist": "{}",
+        "ekillHitlistV2": "{}"
       }, item => {
         if (c.runtime.lastError) {
           console.error(c.runtime.lastError);
@@ -20,6 +21,20 @@
           // current page
 
           let hitList = JSON.parse(item.ekillHitlist);
+          let hitListV2 = JSON.parse(item.ekillHitlistV2);
+
+          ekill.migrateHitList(hitList, hitListV2);
+
+          c.storage.local.set({
+            "ekillHitlistV2": JSON.stringify(hitListV2)
+          }, _ => {
+            if (c.runtime.lastError) {
+              console.error(c.runtime.lastError);
+            } else {
+              console.log("hit list migrated");
+            }
+          });
+
           let paths = hitList[l.hostname];
 
           if (paths !== undefined) {
