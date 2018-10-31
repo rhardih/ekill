@@ -10,6 +10,7 @@ zip -d ekill.zip README.md
 zip -d ekill.zip package.sh
 zip -d ekill.zip example.gif
 zip -d ekill.zip test/*
+zip -d ekill.zip notes
 
 popd
 
