@@ -377,4 +377,32 @@ describe("ekill", function() {
       expect(hitList).to.not.have.any.keys("lorem.com");
     });
   });
+
+  describe("#migrateHitList", function() {
+    it("Migrates a hitList to V2 structure", function() {
+      let hitList = {
+        "example.com": {
+          "/foo": [
+            "body > div#bar"
+          ]
+        }
+      };
+      let hitListV2 = {};
+      let expected = {
+        "example.com": {
+          "/foo": [
+            {
+              "selector": "body > div#bar"
+            }
+          ]
+        }
+      };
+
+      ekill.migrateHitList(hitList, hitListV2);
+
+      expect(hitListV2).to.shallowDeepEqual(expected);
+      expect(hitListV2["example.com"]["/foo"][0]).to.have.all.
+        keys('selector', 'lastUsed');
+    });
+  });
 });
