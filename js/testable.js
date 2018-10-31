@@ -298,4 +298,26 @@ window.ekill = window.ekill || {};
     if (Object.keys(paths).length === 0)
       delete hitList[hostname];
   };
+
+  ekill.migrateHitList = (h0, h1) => {
+    for (let hostname in h0) {
+      if (h0.hasOwnProperty(hostname)) {
+        h1[hostname] = {};
+
+        for (let pathname in h0[hostname]) {
+          if (h0[hostname].hasOwnProperty(pathname)) {
+            h1[hostname][pathname] = [];
+
+            for (let i = 0; i < h0[hostname][pathname].length; ++i) {
+              h1[hostname][pathname].push({
+                selector: h0[hostname][pathname][i],
+                lastUsed: (new Date()).getTime()
+              });
+            }
+          }
+        }
+      }
+    }
+  };
+
 })(window.ekill)
