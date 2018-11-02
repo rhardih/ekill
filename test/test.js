@@ -134,6 +134,14 @@ describe("ekill", function() {
       expect(ds).to.equal("#ehtd-06 > p:nth-of-type(1)");
       expect(selected).to.equal(target);
     });
+
+    it("should throw an error for invalid css id", function() {
+      let target = document.querySelector("[data-target=ehtd-07-target]");
+      let hierarchy = ekill.generateElementHierarchy(target);
+      let proc = _ => ekill.elementHierarchyToDOMString(hierarchy);
+
+      expect(proc).to.throw();
+    });
   });
 
   describe("#addHit", function() {
