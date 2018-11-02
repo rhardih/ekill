@@ -340,4 +340,19 @@ window.ekill = window.ekill || {};
     }
   };
 
+  /**
+   * Tests whether one "major.minor.patch" version string represents a newer
+   * version than another, but only considering major and minor versions.
+   *
+   * @param {String} v0 - Canditate version string
+   * @param {String} v1 - Version string to test against
+   * @returns {Bool}
+   */
+  ekill.isNewerVersion = (v0, v1) => {
+    let t0 = v0.split(".").map(n => parseInt(n, 10));
+    let t1 = v1.split(".").map(n => parseInt(n, 10));
+
+    return t0[0] > t1[0] || (t0[0] === t1[0] && t0[1] > t1[1]);
+  };
+
 })(window.ekill)
