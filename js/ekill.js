@@ -126,19 +126,25 @@
         } else {
           let hitList = JSON.parse(item.ekillHitlistV2);
           let hierarchy = ekill.generateElementHierarchy(element);
-          let selector = ekill.elementHierarchyToDOMString(hierarchy);
 
-          ekill.addHit(hitList, l.hostname, l.pathname, selector);
+          try {
+            let selector = ekill.elementHierarchyToDOMString(hierarchy);
 
-          c.storage.local.set({
-            "ekillHitlistV2": JSON.stringify(hitList)
-          }, _ => {
-            if (c.runtime.lastError) {
-              console.error(c.runtime.lastError);
-            } else {
-              callback();
-            }
-          });
+            ekill.addHit(hitList, l.hostname, l.pathname, selector);
+
+            c.storage.local.set({
+              "ekillHitlistV2": JSON.stringify(hitList)
+            }, _ => {
+              if (c.runtime.lastError) {
+                console.error(c.runtime.lastError);
+              } else {
+                callback();
+              }
+            });
+          } catch (e) {
+            console.log("ekill: removed element not saved");
+            console.error(e);
+          }
         }
       });
     }
