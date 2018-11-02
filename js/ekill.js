@@ -11,7 +11,6 @@
     //
     if (settings.holdsGrudge === "true") {
       c.storage.local.get({
-        "ekillHitlist": "{}",
         "ekillHitlistV2": "{}"
       }, item => {
         if (c.runtime.lastError) {
@@ -20,20 +19,10 @@
           // Remove all elements ekill currently holds a grudge against on the
           // current page
 
-          let hitList = JSON.parse(item.ekillHitlist);
-          let hitListV2 = JSON.parse(item.ekillHitlistV2);
+          let hitList = JSON.parse(item.ekillHitlistV2);
 
-          ekill.migrateHitList(hitList, hitListV2);
-
-          c.storage.local.set({
-            "ekillHitlistV2": JSON.stringify(hitListV2)
-          }, _ => {
-            if (c.runtime.lastError) {
-              console.error(c.runtime.lastError);
-            } else {
-              console.log("hit list migrated");
-            }
-          });
+          // Clean up old hit list
+          c.storage.local.remove("ekillHitlist");
 
           let paths = hitList[l.hostname];
 
@@ -41,11 +30,15 @@
             let selectors = [];
 
             if (paths[l.pathname] !== undefined) {
-              selectors = selectors.concat(paths[l.pathname]);
+              paths[l.pathname].forEach(item => {
+                selectors.push(item.selector);
+              });
             }
 
             if (paths["*"] !== undefined) {
-              selectors = selectors.concat(paths["*"]);
+              paths["*"].forEach(item => {
+                selectors.push(item.selector);
+              });
             }
 
             if (selectors.length !== 0) {
@@ -126,19 +119,19 @@
 
     let saveRemovedElement = (element, callback) => {
       c.storage.local.get({
-        "ekillHitlist": "{}"
+        "ekillHitlistV2": "{}"
       }, item => {
         if (c.runtime.lastError) {
           console.error(c.runtime.lastError);
         } else {
-          let hitList = JSON.parse(item.ekillHitlist);
+          let hitList = JSON.parse(item.ekillHitlistV2);
           let hierarchy = ekill.generateElementHierarchy(element);
           let selector = ekill.elementHierarchyToDOMString(hierarchy);
 
           ekill.addHit(hitList, l.hostname, l.pathname, selector);
 
           c.storage.local.set({
-            "ekillHitlist": JSON.stringify(hitList)
+            "ekillHitlistV2": JSON.stringify(hitList)
           }, _ => {
             if (c.runtime.lastError) {
               console.error(c.runtime.lastError);

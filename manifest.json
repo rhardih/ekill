@@ -1,6 +1,6 @@
 {
   "name": "ekill",
-  "version": "1.7.2",
+  "version": "1.7.3",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {

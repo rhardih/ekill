@@ -138,7 +138,7 @@ describe("ekill", function() {
 
   describe("#addHit", function() {
     before(function() {
-      this.clock = sinon.useFakeTimers();
+      this.clock = sinon.useFakeTimers(42);
     });
 
     after(function() {
@@ -150,7 +150,8 @@ describe("ekill", function() {
       let expected = {
         "example.com": {
           "/foo": [{
-            selector: "body > div#annoying-popup"
+            selector: "body > div#annoying-popup",
+            lastUsed: 42
           }]
         }
       }
@@ -168,17 +169,21 @@ describe("ekill", function() {
     it("should append hits on the same page and only once", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }]
         }
       }
       let expected = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0",
-            "body > div#annoying-popup-1"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }, {
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -197,19 +202,16 @@ describe("ekill", function() {
       )
 
       expect(hitList).to.shallowDeepEqual(expected);
-      expect(hitList["example.com"]["/foo"]).to.have.members([
-        "body > div#annoying-popup-0",
-        "body > div#annoying-popup-1",
-      ]);
     });
 
     it("should hoist equal hits on different pages as a single wildcard", function() {
       let hitList = {}
       let expected = {
         "example.com": {
-          "*": [
-            "body > div#annoying-popup-0"
-          ]
+          "*": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -235,25 +237,24 @@ describe("ekill", function() {
       )
 
       expect(hitList).to.shallowDeepEqual(expected);
-      expect(hitList["example.com"]["*"]).to.have.members([
-        "body > div#annoying-popup-0"
-      ]);
     });
 
     it("should collapse selectors if matching a parent of previous killed element", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0 > div.popup-content"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0 > div.popup-content",
+            lastUsed: 123
+          }]
         }
       }
 
       let expected = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -270,17 +271,19 @@ describe("ekill", function() {
     it("should not collapse selectors if matching isn't a full parent", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "div > p:nth-of-type(1)"
-          ]
+          "/foo": [{
+            selector: "div > p:nth-of-type(1)",
+            lastUsed: 42
+          }]
         }
       }
 
       let expected = {
         "example.com": {
-          "/foo": [
-            "div > p:nth-of-type(1)"
-          ]
+          "/foo": [{
+            selector: "div > p:nth-of-type(1)",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -299,17 +302,21 @@ describe("ekill", function() {
     it("should remove a hit", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0",
-            "body > div#annoying-popup-1"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }, {
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
       let expected = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-1"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -326,19 +333,22 @@ describe("ekill", function() {
     it("should remove a hit and path if there's no other hits for path", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0"
-          ],
-          "/bar": [
-            "body > div#annoying-popup-1"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }],
+          "/bar": [{
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
       let expected = {
         "example.com": {
-          "/bar": [
-            "body > div#annoying-popup-1"
-          ]
+          "/bar": [{
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
 
@@ -356,21 +366,24 @@ describe("ekill", function() {
     it("should remove a hit, path and host if no other...", function() {
       let hitList = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }]
         },
         "lorem.com": {
-          "/ipsum": [
-            "body > div#annoying-popup-1"
-          ]
+          "/ipsum": [{
+            selector: "body > div#annoying-popup-1",
+            lastUsed: 42
+          }]
         }
       }
       let expected = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup-0"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup-0",
+            lastUsed: 123
+          }]
         }
       }
 

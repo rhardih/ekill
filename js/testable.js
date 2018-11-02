@@ -202,14 +202,17 @@ window.ekill = window.ekill || {};
       let wildcards = paths["*"];
 
       for (let i = 0; i < wildcards.length; ++i) {
-        let s = wildcards[i];
+        let item = wildcards[i];
 
         // Note that startsWith returns true for equality and not just substring
         // match. In both cases nothing further needs to be done though, since
         // the selector is either pre-existing or being updated.
-        if (s.startsWith(selector)) {
-          if(!pseudo(s, selector)) {
-            wildcards[i] = selector;
+        if (item.selector.startsWith(selector)) {
+          if(!pseudo(item.selector, selector)) {
+            wildcards[i] = {
+              selector: selector,
+              lastUsed: (new Date()).getTime()
+            };
           }
           return;
         }
@@ -222,11 +225,13 @@ window.ekill = window.ekill || {};
       let selectors = paths[pathname];
 
       for (let i = 0; i < selectors.length; ++i) {
-        let s = selectors[i];
-
-        if (s.startsWith(selector)) {
-          if(!pseudo(s, selector)) {
-            selectors[i] = selector;
+        let item = selectors[i];
+        if (item.selector.startsWith(selector)) {
+          if(!pseudo(item.selector, selector)) {
+            selectors[i] = {
+              selector: selector,
+              lastUsed: (new Date()).getTime()
+            };
           }
           return;
         }
@@ -240,13 +245,17 @@ window.ekill = window.ekill || {};
     // If the same element has been killed under the same domain but for
     // different pathnames, hoist it to be a wildcard match
     let selectors = paths[pathname];
+
     let addToWildcard = false;
     for (let p in paths) {
       if (p === "*") continue;
       if (p === pathname) continue;
 
       if (paths.hasOwnProperty(p)) {
-        let selectorIndex = paths[p].indexOf(selector);
+        let selectorIndex = paths[p].findIndex(e => {
+          return e.selector === selector;
+        });
+
         if (selectorIndex !== -1) {
           addToWildcard = true;
 
@@ -259,12 +268,21 @@ window.ekill = window.ekill || {};
     if (addToWildcard) {
       if (!hostHasWildcards)
         paths["*"] = [];
-      paths["*"].push(selector);
+      paths["*"].push({
+        selector: selector,
+        lastUsed: (new Date()).getTime()
+      });
     } else {
       // Only append selector if it's not already there
-      if (selectors.indexOf(selector) === -1)
-        selectors.push(selector);
-
+      let selectorIndex = selectors.findIndex(e => {
+        return e.selector === selector;
+      });
+      if (selectorIndex === -1) {
+        selectors.push({
+          selector: selector,
+          lastUsed: (new Date()).getTime()
+        });
+      }
     }
 
     // Clean up potentially empty paths
@@ -287,7 +305,9 @@ window.ekill = window.ekill || {};
    */
   ekill.removeHit = (hitList, hostname, pathname, selector) => {
     let paths = hitList[hostname];
-    let selectorIndex = paths[pathname].indexOf(selector);
+    let selectorIndex = paths[pathname].findIndex(item => {
+      return item.selector = selector;
+    });
     paths[pathname].splice(selectorIndex, 1);
 
     // Cleanup empty paths
