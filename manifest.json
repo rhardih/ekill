@@ -1,6 +1,6 @@
 {
   "name": "ekill",
-  "version": "1.7.3",
+  "version": "1.8.0",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {
@@ -57,8 +57,8 @@
   "commands": {
     "_execute_browser_action": {
       "suggested_key": {
-        "default": "Ctrl+K",
-        "mac": "MacCtrl+K"
+        "default": "Ctrl+Shift+K",
+        "mac": "MacCtrl+Shift+K"
       }
     }
   }
