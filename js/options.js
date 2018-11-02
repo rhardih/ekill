@@ -35,8 +35,8 @@
 
           let pathnameObject = hostnameObject[pathname];
 
-          pathnameObject.forEach(selector => pathnameNode.nodes.push({
-            text: selector,
+          pathnameObject.forEach(item => pathnameNode.nodes.push({
+            text: item.selector,
             hostname: hostname,
             pathname: pathname
           }));
@@ -51,12 +51,12 @@
     }
 
     c.storage.local.get({
-      ekillHitlist: "{}"
+      "ekillHitlistV2": "{}"
     }, item => {
       if (c.runtime.lastError) {
         console.error(c.runtime.lastError);
       } else {
-        let hitList = JSON.parse(item.ekillHitlist);
+        let hitList = JSON.parse(item.ekillHitlistV2);
         let treeData = convertToTreeData(hitList);
 
         $('#hit-list').treeview({
@@ -149,7 +149,7 @@
               ekill.removeHit(hitList, s.hostname, s.pathname, s.text);
 
               let settings = {
-                ekillHitlist: JSON.stringify(hitList)
+                "ekillHitlistV2": JSON.stringify(hitList)
               };
 
               c.storage.local.set(settings, _ => {
