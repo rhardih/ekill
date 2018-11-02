@@ -14,8 +14,10 @@
     } else {
       let ekillVersion = item.ekillVersion;
       let ekillSettings = item.ekillSettings;
-      let stringVersion = c.runtime.getManifest().version.toString();
-      let showChanges = ekillVersion.shownChangesFor < stringVersion;
+
+      let showChanges = ekill.isNewerVersion(
+        c.runtime.getManifest().version,
+        ekillVersion.shownChangesFor);
 
       if (showChanges) {
         c.browserAction.setBadgeText({text: "New"});

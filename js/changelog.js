@@ -14,7 +14,11 @@ document.addEventListener('DOMContentLoaded', _ => {
 
       // Mark each version header not previously show with a "New" badge
       $("h2.version-header").each((index, header) => {
-        if ($(header).data("version") > ekillVersion.shownChangesFor) {
+        let showBadge = ekill.isNewerVersion(
+          $(header).data("version").toString(),
+          ekillVersion.shownChangesFor);
+
+        if (showBadge) {
           $(header).html(`${$(header).text()} <span class="badge">New</span>`);
         }
       });
