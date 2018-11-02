@@ -137,13 +137,21 @@ describe("ekill", function() {
   });
 
   describe("#addHit", function() {
+    before(function() {
+      this.clock = sinon.useFakeTimers();
+    });
+
+    after(function() {
+      this.clock.restore();
+    });
+
     it("should add new hits", function() {
       let hitList = {};
       let expected = {
         "example.com": {
-          "/foo": [
-            "body > div#annoying-popup"
-          ]
+          "/foo": [{
+            selector: "body > div#annoying-popup"
+          }]
         }
       }
 
@@ -379,6 +387,14 @@ describe("ekill", function() {
   });
 
   describe("#migrateHitList", function() {
+    before(function() {
+      this.clock = sinon.useFakeTimers(42);
+    });
+
+    after(function() {
+      this.clock.restore();
+    });
+
     it("Migrates a hitList to V2 structure", function() {
       let hitList = {
         "example.com": {
@@ -392,7 +408,8 @@ describe("ekill", function() {
         "example.com": {
           "/foo": [
             {
-              "selector": "body > div#bar"
+              "selector": "body > div#bar",
+              "lastUsed": 42
             }
           ]
         }
@@ -401,8 +418,6 @@ describe("ekill", function() {
       ekill.migrateHitList(hitList, hitListV2);
 
       expect(hitListV2).to.shallowDeepEqual(expected);
-      expect(hitListV2["example.com"]["/foo"][0]).to.have.all.
-        keys('selector', 'lastUsed');
     });
   });
 });
