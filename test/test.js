@@ -433,4 +433,69 @@ describe("ekill", function() {
       expect(hitListV2).to.shallowDeepEqual(expected);
     });
   });
+
+  describe("#isNewerVersion", function() {
+    it("returns true for greater major", function() {
+      var v0 = "1.0.0"
+      var v1 = "2.0.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.true;
+    });
+
+    it("returns true for greater minor", function() {
+      var v0 = "1.0.0"
+      var v1 = "1.1.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.true;
+    });
+
+    it("returns false for greater patch", function() {
+      var v0 = "1.0.0"
+      var v1 = "1.0.1"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for equal major", function() {
+      var v0 = "1.0.0"
+      var v1 = "1.0.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for equal minor", function() {
+      var v0 = "1.1.0"
+      var v1 = "1.1.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for equal patch", function() {
+      var v0 = "1.0.1"
+      var v1 = "1.0.1"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for lesser major", function() {
+      var v0 = "2.0.0"
+      var v1 = "1.0.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for lesser minor", function() {
+      var v0 = "1.2.0"
+      var v1 = "1.1.0"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+
+    it("returns false for lesser patch", function() {
+      var v0 = "1.0.2"
+      var v1 = "1.0.1"
+
+      expect(ekill.isNewerVersion(v1, v0)).to.be.false;
+    });
+  });
 });
