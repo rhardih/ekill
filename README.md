@@ -13,7 +13,7 @@ Chrome and Firefox plugin for quickly getting rid of elements on a web page.
 
 ## Keyboard shortcut
 
-By default **ekill** is toggled with *ctrl+k*, but this can be modified at will.
+By default **ekill** is toggled with *ctrl+shift+k*, but this can be modified at will.
 
 Go to [chrome://extensions/shortcuts](chrome://extensions/shortcuts), find the item labeled "ekill" and set it to whatever is most convenient.
 
@@ -36,6 +36,10 @@ list, is included in the options page.
 MIT: http://rhardih.mit-license.org
 
 ## Changelog
+
+**1.8**
+
+- Changes the default hot-key from Ctrl+k to Ctrl+Shift+k.
 
 **1.7**
 
