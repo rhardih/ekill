@@ -1,6 +1,6 @@
 {
   "name": "ekill",
-  "version": "1.8.0",
+  "version": "1.8.1",
   "description": "Remove unwanted elements from a page quickly!",
   "manifest_version": 2,
   "browser_action": {
@@ -37,8 +37,7 @@
     "unlimitedStorage"
   ],
   "background": {
-    "scripts": ["js/background.js"],
-    "persistent": false
+    "scripts": ["js/testable.js", "js/background.js"]
   },
   "content_scripts": [{
     "matches": ["<all_urls>"],
