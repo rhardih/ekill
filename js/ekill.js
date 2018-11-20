@@ -20,10 +20,6 @@
           // current page
 
           let hitList = JSON.parse(item.ekillHitlistV2);
-
-          // Clean up old hit list
-          c.storage.local.remove("ekillHitlist");
-
           let paths = hitList[l.hostname];
 
           if (paths !== undefined) {
