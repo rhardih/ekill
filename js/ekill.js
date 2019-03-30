@@ -1,5 +1,6 @@
-((c, d, l, ekill) => {
+((c, d, l, w) => {
   c.runtime.sendMessage('pageLoading');
+  let ekill = w.ekill;
 
   let contentAction = settings => {
     let killCount = 0;
@@ -103,9 +104,16 @@
       d.getElementsByTagName("button"),
       d.querySelectorAll('[role=button]'),
     ];
+    let iframeOverlays = [];
 
     let overHandler = e => {
       e.target.classList.add("ekill");
+
+      if (e.target.classList.contains("ekill-overlay")) {
+        let iframe = iframeOverlays[e.target.dataset.index].iframe;
+        iframe.classList.add("ekill");
+      }
+
       e.stopPropagation();
     };
     let outHandler = e => {
@@ -148,10 +156,16 @@
     let clickHandler = e => {
       disable();
 
+      let target = e.target;
+
+      if (target.classList.contains("ekill-overlay")) {
+        target = iframeOverlays[target.dataset.index].iframe;
+      }
+
       if (settings.holdsGrudge === "true") {
-        saveRemovedElement(e.target, () => e.target.remove());
+        saveRemovedElement(target, () => target.remove());
       } else {
-        e.target.remove();
+        target.remove();
       }
 
       e.preventDefault();
@@ -175,6 +189,30 @@
         }
       });
 
+      let iframes = d.querySelectorAll('iframe');
+
+      iframes.forEach(i => {
+        let overlay = d.createElement('div');
+        let iframeClientRect = i.getBoundingClientRect();
+        let offsetX = iframeClientRect.left + w.scrollX;
+        let offsetY = iframeClientRect.top + w.scrollY;
+
+        overlay.classList.add("ekill-overlay");
+        overlay.style.top = `${offsetY}px`;
+        overlay.style.left = `${offsetX}px`;
+        overlay.style.width = `${iframeClientRect.width}px`;
+        overlay.style.height = `${iframeClientRect.height}px`;
+
+        overlay.dataset.index = iframeOverlays.length;
+
+        iframeOverlays.push({
+          iframe: i,
+          overlay: overlay
+        });
+
+        d.body.appendChild(overlay);
+      });
+
       d.documentElement.classList.add("ekill-cursor");
       d.addEventListener("mouseover", overHandler);
       d.addEventListener("mouseout", outHandler);
@@ -192,6 +230,8 @@
           delete c[i].onclickBackup;
         }
       });
+
+      iframeOverlays.forEach(o => o.overlay.remove());
 
       d.documentElement.classList.remove("ekill-cursor");
 
@@ -217,7 +257,22 @@
       }
     };
 
+    let updateOverlayPositions = e => {
+      iframeOverlays.forEach(o => {
+        let iframe = o.iframe;
+        let iframeClientRect = iframe.getBoundingClientRect();
+        let overlay = o.overlay;
+        let offsetX = iframeClientRect.left + w.scrollX;
+        let offsetY = iframeClientRect.top + w.scrollY;
+
+        overlay.style.top = `${offsetY}px`;
+        overlay.style.left = `${offsetX}px`;
+      });
+    };
+
     c.runtime.onMessage.addListener(msgHandler);
+    w.addEventListener('scroll', updateOverlayPositions);
+    w.addEventListener('resize', updateOverlayPositions);
   }
 
   // Note even though Firefox uses promises, it supports the 'chrome' object and
@@ -234,4 +289,4 @@
       contentAction(item.ekillSettings);
     }
   });
-})(chrome, document, location, window.ekill);
+})(chrome, document, location, window);
