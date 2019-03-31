@@ -9,7 +9,7 @@ Chrome and Firefox plugin for quickly getting rid of elements on a web page.
 - [Chrome web store](https://chrome.google.com/webstore/detail/ekill/lcgdpfaiipaelnpepigdafiogebaeedg?hl=en)
 - [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/ekill/)
 
-![Example](https://raw.githubusercontent.com/rhardih/ekill/master/example.gif)
+![Example](https://user-images.githubusercontent.com/124250/55288564-a394bd80-53b9-11e9-9152-d2460d3a3728.gif)
 
 ## Keyboard shortcut
 
